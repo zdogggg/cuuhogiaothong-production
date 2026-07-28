@@ -735,15 +735,26 @@ img { max-width: 100%; height: auto; display: block; }
         padding: 15px 0;
         gap: 12px;
     }
-    .header-hotline { width: 100%; justify-content: center; border-radius: 30px; }
+    .header-hotline { width: auto; justify-content: center; border-radius: 30px; padding: 6px 20px; }
+    .hotline-icon-box { width: 28px; height: 28px; font-size: 0.9rem; }
+    .hotline-text strong { font-size: 1.1rem; }
+    .hotline-text span { font-size: 0.65rem; }
+    .hotline-text small { font-size: 0.6rem; }
 
     /* Hero */
-    .hero { padding-top: 30px; padding-bottom: 80px; }
+    .hero { padding-top: 25px; padding-bottom: 30px; }
     .hero-content { padding-right: 0; }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content h1 span { font-size: 2.5rem; }
     .hero-subtitle { font-size: 1rem; }
     .hero-features li { font-size: 0.9rem; }
+
+    /* Quick Request - make it flow normally on mobile */
+    .quick-request-wrapper {
+        position: relative;
+        bottom: auto;
+        margin-top: 20px;
+    }
 
     /* Sections */
     .section-padding { padding: 35px 0; }
