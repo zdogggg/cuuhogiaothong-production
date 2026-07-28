@@ -723,11 +723,25 @@ img { max-width: 100%; height: auto; display: block; }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
+    .header-container { flex-direction: column; gap: 15px; }
     .qr-form { flex-direction: column; }
     .process-steps-horiz { flex-direction: column; gap: 20px; }
     .sh-arrow { display: none; }
     .testi-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr; }
+    .hero-content h1 { font-size: 2.5rem; }
+    .hero-content h1 span { font-size: 2.8rem; }
+    .hero-subtitle { font-size: 1.1rem; }
+    .section-padding { padding: 40px 0; }
+    .pf-center h2 { font-size: 1.8rem; }
+    .about-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    .hero-content h1 { font-size: 2rem; }
+    .hero-content h1 span { font-size: 2.2rem; }
+    .btn-large { padding: 12px 20px; }
+    .box-title { font-size: 1.1rem; }
+    .logo-title { font-size: 1rem; }
 }
 
 /* --- FLOATING CONTACT --- */
