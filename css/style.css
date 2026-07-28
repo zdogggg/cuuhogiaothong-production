@@ -142,19 +142,18 @@ img { max-width: 100%; height: auto; display: block; }
 /* Hamburger Menu Button - hidden on desktop */
 .menu-toggle {
     display: none;
-    background: var(--primary-color);
-    color: var(--white);
+    background: transparent;
+    color: var(--primary-color);
     border: none;
     width: 42px;
     height: 42px;
-    border-radius: 8px;
-    font-size: 1.2rem;
+    font-size: 2rem;
     cursor: pointer;
     transition: var(--transition);
     flex-shrink: 0;
 }
 .menu-toggle:hover {
-    background: var(--primary-dark);
+    color: var(--primary-dark);
 }
 
 .header-hotline {
@@ -778,11 +777,13 @@ img { max-width: 100%; height: auto; display: block; }
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
+        align-items: center;
         height: auto;
         padding: 15px 0;
         gap: 12px;
     }
     .logo { flex: 1; }
+    .logo-slogan { display: none; }
     .header-hotline { width: 100%; justify-content: center; border-radius: 30px; padding: 8px 20px; order: 3; }
     .hotline-icon-box { width: 28px; height: 28px; font-size: 0.9rem; }
     .hotline-text strong { font-size: 1.1rem; }
