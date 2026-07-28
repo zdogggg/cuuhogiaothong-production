@@ -775,12 +775,15 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 768px) {
     /* Header */
     .header-container {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
         height: auto;
         padding: 15px 0;
         gap: 12px;
     }
-    .header-hotline { width: auto; justify-content: center; border-radius: 30px; padding: 6px 20px; }
+    .logo { flex: 1; }
+    .header-hotline { width: 100%; justify-content: center; border-radius: 30px; padding: 8px 20px; order: 3; }
     .hotline-icon-box { width: 28px; height: 28px; font-size: 0.9rem; }
     .hotline-text strong { font-size: 1.1rem; }
     .hotline-text span { font-size: 0.65rem; }
