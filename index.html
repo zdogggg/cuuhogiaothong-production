@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cứu Hộ Giao Thông 123 - Vàng Đỏ</title>
+    <meta name="description"
+        content="Dịch vụ cứu hộ giao thông 24/7, có mặt sau 15-30 phút. Hỗ trợ kéo xe, kích bình, thay lốp tận nơi.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* --- GALLERY --- */
+        .gallery {
+            background-color: var(--white);
+            padding-bottom: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* --- TESTIMONIALS --- */
+    </style>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <i class="fas fa-truck-pickup logo-icon"></i>
+                <div class="logo-text">
+                    <span class="logo-title">CỨU HỘ GIAO THÔNG 123</span>
+                    <span class="logo-slogan">24/7 - Nhanh chóng - An Toàn - Uy Tín</span>
+                </div>
+            </a>
+            <nav class="nav-menu">
+                <a href="#home" class="active">TRANG CHỦ</a>
+                <a href="#services">DỊCH VỤ</a>
+                <a href="#pricing">BẢNG GIÁ</a>
+                <a href="#areas">KHU VỰC HOẠT ĐỘNG</a>
+                <a href="#news">TIN TỨC</a>
+                <a href="#contact">LIÊN HỆ</a>
+            </nav>
+            <a href="tel:0989123123" class="header-hotline">
+                <div class="hotline-icon-box"><i class="fas fa-phone"></i></div>
+                <div class="hotline-text">
+                    <span>HOTLINE 24/7</span>
+                    <strong>0989 123 123</strong>
+                    <small>Gọi ngay - Có mặt sau 15-30 phút</small>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1><span>CỨU HỘ</span><br>GIAO THÔNG 123</h1>
+                <p class="hero-subtitle">Nhanh chóng - An toàn - Giá hợp lý</p>
+                <ul class="hero-features">
+                    <li><i class="fas fa-check-circle"></i> Có mặt nhanh 15 - 30 phút</li>
+                    <li><i class="fas fa-check-circle"></i> Phục vụ 24/7, kể cả ngày lễ, Tết</li>
+                    <li><i class="fas fa-check-circle"></i> Đội ngũ chuyên nghiệp, tận tâm</li>
+                    <li><i class="fas fa-check-circle"></i> Trang thiết bị hiện đại, an toàn</li>
+                </ul>
+                <div class="hero-buttons">
+                    <a href="tel:0989123123" class="btn btn-primary">
+                        <i class="fas fa-phone"></i>
+                        <div class="btn-text">
+                            <span>GỌI CỨU HỘ NGAY</span>
+                            <strong>0989 123 123</strong>
+                        </div>
+                    </a>
+                    <a href="https://zalo.me/0989123123" target="_blank" class="btn btn-outline">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo"
+                            class="zalo-icon">
+                        <div class="btn-text">
+                            <span>CHAT ZALO</span>
+                            <strong>0989 123 123</strong>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="images/xe-cuu-ho1.jpg" alt="Xe cứu hộ">
+            </div>
+        </div>
+
+        <!-- Quick Request Bar -->
+        <div class="quick-request-wrapper">
+            <div class="container">
+                <div class="quick-request-box">
+                    <div class="qr-title">
+                        <h3>YÊU CẦU CỨU HỘ NGAY</h3>
+                        <p>Nhập thông tin để được hỗ trợ nhanh nhất</p>
+                    </div>
+                    <form class="qr-form" onsubmit="event.preventDefault(); alert('Yêu cầu đã được gửi!');">
+                        <div class="input-group">
+                            <input type="text" placeholder="Nhập địa điểm của bạn...">
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                        </div>
+                        <div class="input-group">
+                            <select>
+                                <option value="">Chọn dịch vụ</option>
+                                <option value="keo-xe">Kéo xe</option>
+                                <option value="kich-binh">Kích bình</option>
+                                <option value="thay-lop">Thay lốp</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">YÊU CẦU CỨU HỘ <i
+                                class="fas fa-arrow-right"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services section-padding" id="services">
+        <div class="container">
+            <h2 class="section-title">DỊCH VỤ CỦA CHÚNG TÔI</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-truck-pickup"></i></div>
+                    <h3>KÉO XE</h3>
+                    <p>Kéo xe ô tô, xe tải đến gara hoặc địa điểm theo yêu cầu</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-car-battery"></i></div>
+                    <h3>KÍCH BÌNH</h3>
+                    <p>Kích bình ắc quy ô tô, xe máy tận nơi</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-dharmachakra"></i></div>
+                    <h3>THAY LỐP</h3>
+                    <p>Thay lốp dự phòng, hỗ trợ thay lốp tại chỗ</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-gas-pump"></i></div>
+                    <h3>TIẾP NHIÊN LIỆU</h3>
+                    <p>Hết xăng giữa đường, cung cấp nhiên liệu tận nơi</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-tools"></i></div>
+                    <h3>SỬA CHỮA LƯU ĐỘNG</h3>
+                    <p>Hỗ trợ sửa chữa các lỗi nhẹ tại chỗ</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-truck"></i></div>
+                    <h3>CỨU HỘ XE TẢI</h3>
+                    <p>Cứu hộ xe tải, container, xe khách chuyên nghiệp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Banner -->
+    <section class="stats-banner">
+        <div class="container">
+            <div class="stats-wrapper">
+                <div class="stats-left">
+                    <div class="stat-item">
+                        <i class="far fa-clock"></i>
+                        <div>
+                            <h4>24/7</h4>
+                            <p>Phục vụ 24/7 kể cả ngày lễ, Tết</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-stopwatch"></i>
+                        <div>
+                            <h4>15-30 PHÚT</h4>
+                            <p>Có mặt nhanh chóng sau khi tiếp nhận</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <h4>100+</h4>
+                            <p>Đội ngũ chuyên nghiệp kinh nghiệm, tận tâm</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h4>5000+</h4>
+                            <p>Lượt cứu hộ thành công được khách hàng tin tưởng</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-right">
+                    <div class="hotline-box">
+                        <div class="hb-top">
+                            <i class="fas fa-phone-volume"></i>
+                            <div>
+                                <span>HOTLINE CỨU HỘ 24/7</span>
+                                <strong>0989 123 123</strong>
+                            </div>
+                        </div>
+                        <div class="hb-bottom">
+                            GỌI LÀ CÓ - CÓ LÀ ĐẾN
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Split Section: Areas & Process -->
+    <section class="areas-process-section section-padding" id="areas">
+        <div class="container">
+            <div class="ap-grid">
+                <!-- Areas -->
+                <!-- Map Box -->
+                <div class="areas-box mb-30">
+                    <h3 class="box-title">BẢN ĐỒ VỊ TRÍ</h3>
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3728.675003517452!2d106.63924577484478!3d20.871015980738676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a7b65be9e38b3%3A0x611e5fbb8ed14221!2sC%E1%BB%A9u%20h%E1%BB%99%20giao%20th%C3%B4ng%20123%20H%E1%BA%A3i%20Ph%C3%B2ng!5e1!3m2!1svi!2s!4v1714574921612!5m2!1svi!2s"
+                            width="100%" height="450"
+                            style="border:0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+
+                <!-- Areas Tags -->
+                <div class="areas-box">
+                    <h3 class="box-title">KHU VỰC HOẠT ĐỘNG</h3>
+                    <div class="areas-list">
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Hà Nội</span>
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Hải Phòng</span>
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Quảng Ninh</span>
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Thái Bình</span>
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Nam Định</span>
+                        <span class="area-tag"><i class="fas fa-map-marker-alt"></i> Bắc Ninh</span>
+                    </div>
+                </div>
+
+                <!-- Process -->
+                <div class="process-box">
+                    <h3 class="box-title">QUY TRÌNH CỨU HỘ</h3>
+                    <div class="process-steps-horiz">
+                        <div class="step-h">
+                            <div class="sh-icon"><span class="sh-num">1</span><i class="fas fa-phone-alt"></i></div>
+                            <h4>GỌI HOTLINE</h4>
+                            <p>Liên hệ hotline 24/7 để được hỗ trợ</p>
+                        </div>
+                        <div class="sh-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                        <div class="step-h">
+                            <div class="sh-icon"><span class="sh-num">2</span><i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h4>XÁC NHẬN VỊ TRÍ</h4>
+                            <p>Cung cấp vị trí và thông tin sự cố</p>
+                        </div>
+                        <div class="sh-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                        <div class="step-h">
+                            <div class="sh-icon"><span class="sh-num">3</span><i class="fas fa-truck-pickup"></i></div>
+                            <h4>XE CỨU HỘ XUẤT PHÁT</h4>
+                            <p>Xe gần nhất sẽ được điều động đến bạn</p>
+                        </div>
+                        <div class="sh-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                        <div class="step-h">
+                            <div class="sh-icon"><span class="sh-num">4</span><i class="fas fa-check-circle"></i></div>
+                            <h4>HOÀN THÀNH</h4>
+                            <p>Xử lý sự cố, bàn giao xe và thanh toán</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery section-padding" id="gallery">
+        <div class="container">
+            <h2 class="section-title">HÌNH ẢNH HOẠT ĐỘNG</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="images/xe-cuu-ho1.jpg" alt="Cứu hộ 1"></div>
+                <div class="gallery-item"><img src="images/xe-cuu-ho2.jpg" alt="Cứu hộ 2"></div>
+                <div class="gallery-item"><img src="images/xe-cuu-ho3.jpg" alt="Cứu hộ 3"></div>
+                <div class="gallery-item"><img src="images/xe-cuu-ho4.jpg" alt="Cứu hộ 4"></div>
+                <div class="gallery-item"><img src="images/xe-cuu-ho5.jpg" alt="Cứu hộ 5"></div>
+                <div class="gallery-item"><img src="images/xe-cuu-ho6.jpg" alt="Cứu hộ 6"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials section-padding">
+        <div class="container">
+            <h2 class="section-title">KHÁCH HÀNG NÓI GÌ VỀ CHÚNG TÔI</h2>
+            <div class="testi-grid">
+                <div class="testi-card">
+                    <div class="testi-header">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="Nguyễn Văn Nam">
+                        <div>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <h4>Nguyễn Văn Nam</h4>
+                            <span>Hà Nội</span>
+                        </div>
+                    </div>
+                    <p>Dịch vụ rất nhanh chóng, chỉ 20 phút là có mặt. Nhân viên nhiệt tình, chuyên nghiệp. Rất hài
+                        lòng!</p>
+                    <i class="fas fa-quote-right quote-icon"></i>
+                </div>
+                <div class="testi-card">
+                    <div class="testi-header">
+                        <img src="https://i.pravatar.cc/150?img=5" alt="Trần Thị Mai">
+                        <div>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <h4>Trần Thị Mai</h4>
+                            <span>Hải Phòng</span>
+                        </div>
+                    </div>
+                    <p>Xe bị hết bình giữa đường, gọi cứu hộ là đến ngay. Giá cả hợp lý, sẽ ủng hộ lâu dài.</p>
+                    <i class="fas fa-quote-right quote-icon"></i>
+                </div>
+                <div class="testi-card">
+                    <div class="testi-header">
+                        <img src="https://i.pravatar.cc/150?img=8" alt="Lê Hoàng Duy">
+                        <div>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <h4>Lê Hoàng Duy</h4>
+                            <span>Bắc Ninh</span>
+                        </div>
+                    </div>
+                    <p>Cứu hộ lúc nửa đêm, rất cảm ơn đội ngũ hỗ trợ nhiệt tình. Dịch vụ 5 sao!</p>
+                    <i class="fas fa-quote-right quote-icon"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pre-Footer Banner -->
+    <section class="pre-footer">
+        <div class="container pf-container">
+            <div class="pf-left">
+                <img src="images/xe-cuu-ho1.jpg" alt="Xe cứu hộ">
+            </div>
+            <div class="pf-center">
+                <h2>CỨU HỘ GIAO THÔNG 123</h2>
+                <p>Nhanh chóng - An toàn - Uy tín - Giá hợp lý</p>
+                <div class="pf-tag">LUÔN SẴN SÀNG PHỤC VỤ BẠN!</div>
+            </div>
+            <div class="pf-right">
+                <a href="tel:0989123123" class="btn btn-primary btn-large">
+                    <i class="fas fa-phone"></i>
+                    <div class="btn-text">
+                        <span>GỌI CỨU HỘ NGAY</span>
+                        <strong>0989 123 123</strong>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Col 1 -->
+                <div class="footer-col">
+                    <h4 class="footer-heading footer-logo-text">CỨU HỘ GIAO THÔNG 123</h4>
+                    <p class="footer-desc">Chúng tôi chuyên cung cấp dịch vụ cứu hộ giao thông 24/7 nhanh chóng, an
+                        toàn, uy tín với chi phí hợp lý nhất.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <!-- Col 2 -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">DỊCH VỤ</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Kéo xe</a></li>
+                        <li><a href="#">Kích bình</a></li>
+                        <li><a href="#">Thay lốp</a></li>
+                        <li><a href="#">Tiếp nhiên liệu</a></li>
+                        <li><a href="#">Sửa chữa lưu động</a></li>
+                        <li><a href="#">Cứu hộ xe tải</a></li>
+                    </ul>
+                </div>
+                <!-- Col 3 -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">THÔNG TIN</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Tin tức</a></li>
+                        <li><a href="#">Bảng giá</a></li>
+                        <li><a href="#">Khu vực hoạt động</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <!-- Col 4 -->
+                <div class="footer-col contact-col">
+                    <h4 class="footer-heading">LIÊN HỆ</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-phone-alt"></i> 0989 123 123</li>
+                        <li><i class="fas fa-envelope"></i> cuuhogiaothong@gmail.com</li>
+                        <li><i class="fas fa-globe"></i> www.cuuhogiaothong.vn</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Km92 ngõ An Trì, Hồng Bàng, Hải Phòng, Việt Nam
+                        </li>
+                    </ul>
+                </div>
+                <!-- Col 5: QR Code -->
+                <div class="footer-col qr-col">
+                    <h4 class="footer-heading">QUÉT MÃ ZALO</h4>
+                    <div class="qr-code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zalo.me/0989123123"
+                            alt="QR Code Zalo">
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cứu Hộ Giao Thông. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Contact Buttons -->
+    <div class="floating-contact">
+        <a href="https://zalo.me/0989123123" target="_blank" class="float-btn float-zalo">
+            <img src="images/zalo-icon.png" alt="Zalo">
+        </a>
+        <a href="tel:0989123123" class="float-btn float-phone">
+            <i class="fas fa-phone-alt"></i>
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>
