@@ -1,12 +1,11 @@
-// TODO: Dán cấu hình Firebase của bạn vào đây (Lấy từ Firebase Console)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAalG0Z_esnaZpnbRTTX45GSOtlK5Ee-Xs",
+    authDomain: "cuuhogiaothong123.firebaseapp.com",
+    databaseURL: "https://cuuhogiaothong123-default-rtdb.firebaseio.com",
+    projectId: "cuuhogiaothong123",
+    storageBucket: "cuuhogiaothong123.firebasestorage.app",
+    messagingSenderId: "1069997605416",
+    appId: "1:1069997605416:web:9e9a43fff4ecb65080eb1d"
 };
 
 // Khởi tạo Firebase
