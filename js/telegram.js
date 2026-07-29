@@ -126,9 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở máy tính cá nhân
             }
             
-            let locationParams = '';
+            let locationParams = `&phone=${encodeURIComponent(phone)}`;
             if (customerLat && customerLng) {
-                locationParams = `&lat=${customerLat}&lng=${customerLng}`;
+                locationParams = `&lat=${customerLat}&lng=${customerLng}&phone=${encodeURIComponent(phone)}`;
             }
             
             const driverLink = `${baseUrl}/driver.html?id=${bookingId}${locationParams}`;
@@ -169,11 +169,20 @@ document.addEventListener('DOMContentLoaded', () => {
                             showConfirmButton: false,
                             timer: 2000
                         }).then(() => {
-                            window.location.href = `track.html?id=${bookingId}${locationParams}`;
+                            const trackUrl = `track.html?id=${bookingId}${locationParams}`;
+                            const newTab = window.open(trackUrl, '_blank');
+                            if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+                                // Bị chặn popup, đành nhảy đè trang hiện tại
+                                window.location.href = trackUrl;
+                            }
                         });
                     } else {
                         alert('Gửi yêu cầu thành công! Đang chuyển sang màn hình theo dõi...');
-                        window.location.href = `track.html?id=${bookingId}${locationParams}`;
+                        const trackUrl = `track.html?id=${bookingId}${locationParams}`;
+                        const newTab = window.open(trackUrl, '_blank');
+                        if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+                            window.location.href = trackUrl;
+                        }
                     }
                 } else {
                     if (typeof Swal !== 'undefined') {

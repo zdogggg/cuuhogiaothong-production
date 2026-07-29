@@ -47,6 +47,7 @@ let isFirstLocation = true;
 // Lấy mã bookingId và tọa độ khách hàng từ URL
 const customerLat = urlParams.get('lat');
 const customerLng = urlParams.get('lng');
+const customerPhone = urlParams.get('phone');
 
 // Icon Khách hàng
 const customerIcon = L.divIcon({
@@ -68,6 +69,13 @@ if (!bookingId) {
     Swal.fire('Lỗi', 'Đường link không hợp lệ. Vui lòng mở lại từ Telegram.', 'error');
 } else {
     bookingDisplay.innerText = "Mã: " + bookingId;
+    
+    if (customerPhone) {
+        document.getElementById('customerPhoneDisplay').style.display = 'block';
+        const callBtn = document.getElementById('callCustomerBtn');
+        callBtn.href = 'tel:' + customerPhone;
+        callBtn.querySelector('span').innerText = customerPhone;
+    }
 }
 
 btnStart.addEventListener('click', () => {
