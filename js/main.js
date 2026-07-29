@@ -122,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // TODO: Thay thế bằng Token và Chat ID thật của bạn
-            const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
-            const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
+            const TELEGRAM_BOT_TOKEN = '8801278671:AAEa3voVbtSHOXagGIlIXHNxdvbSAHsRdqg';
+            const TELEGRAM_CHAT_ID = '5655272363';
             
             if (TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN') {
                 alert('Tính năng gửi Telegram chưa được cấu hình (Chưa có Token).');
