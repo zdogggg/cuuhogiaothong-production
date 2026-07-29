@@ -806,6 +806,7 @@ img { max-width: 100%; height: auto; display: block; }
 
     /* Hero */
     .hero { padding-top: 40px; padding-bottom: 80px; }
+    .hero::after { background-position: 75% center; }
     .hero-content { padding: 20px; background: rgba(255, 255, 255, 0.7); }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content h1 span { font-size: 2.5rem; }
