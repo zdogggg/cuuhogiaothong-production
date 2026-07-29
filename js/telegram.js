@@ -57,7 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const finalLocation = mapLink ? `${location}\n📍 Bản đồ: ${mapLink}` : location;
             
+            const now = new Date();
+            const timeString = now.toLocaleString('vi-VN');
+
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
+                          + `⏰ Thời gian: ${timeString}\n`
                           + `📞 SĐT Khách: ${phone}\n`
                           + `🛠 Dịch vụ: ${service}\n`
                           + `📍 Vị trí: ${finalLocation}`;
