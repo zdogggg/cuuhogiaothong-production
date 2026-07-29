@@ -788,7 +788,8 @@ img { max-width: 100%; height: auto; display: block; }
         gap: 5px;
     }
     .logo { justify-content: center; order: 2; flex: 1; }
-    .logo img { height: 40px !important; }
+    .logo img { height: 35px !important; }
+    .logo-title { font-size: 0.85rem; line-height: 1; }
     .logo-slogan { display: none; }
     .menu-toggle {
         position: static;
