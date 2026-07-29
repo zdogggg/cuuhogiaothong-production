@@ -32,9 +32,25 @@ const towTruckIcon = L.divIcon({
 
 let driverMarker = null;
 
-// Lấy mã bookingId từ URL (?id=CH123456)
+// Lấy mã bookingId và tọa độ khách hàng từ URL (?id=CH123456&lat=...&lng=...)
 const urlParams = new URLSearchParams(window.location.search);
 const bookingId = urlParams.get('id');
+const customerLat = urlParams.get('lat');
+const customerLng = urlParams.get('lng');
+
+// Icon Khách hàng
+const customerIcon = L.divIcon({
+    html: '<div style="font-size: 32px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); line-height: 1;">📍</div>',
+    className: 'custom-div-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32]
+});
+
+if (customerLat && customerLng) {
+    L.marker([customerLat, customerLng], {icon: customerIcon}).addTo(map)
+        .bindPopup('<b>Vị trí khách hàng</b>').openPopup();
+    map.setView([customerLat, customerLng], 14);
+}
 
 if (!bookingId) {
     alert("Không tìm thấy mã chuyến xe!");

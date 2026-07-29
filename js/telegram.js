@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSubmitRescue = document.getElementById('btnSubmitRescue');
 
     let mapLink = '';
+    let customerLat = null;
+    let customerLng = null;
 
     if (btnGetLocation && locationInput) {
         btnGetLocation.addEventListener('click', () => {
@@ -14,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon.className = 'fas fa-spinner fa-spin';
                 
                 navigator.geolocation.getCurrentPosition((position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    mapLink = `https://maps.google.com/?q=${lat},${lng}`;
-                    locationInput.value = `Đã lấy vị trí (Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)})`;
+                    customerLat = position.coords.latitude;
+                    customerLng = position.coords.longitude;
+                    mapLink = `https://maps.google.com/?q=${customerLat},${customerLng}`;
+                    locationInput.value = `Đã lấy vị trí (Lat: ${customerLat.toFixed(4)}, Lng: ${customerLng.toFixed(4)})`;
                     icon.className = 'fas fa-map-marker-alt';
                     
                     if (typeof Swal !== 'undefined') {
@@ -123,7 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở máy tính cá nhân
             }
-            const driverLink = `${baseUrl}/driver.html?id=${bookingId}`;
+            
+            let locationParams = '';
+            if (customerLat && customerLng) {
+                locationParams = `&lat=${customerLat}&lng=${customerLng}`;
+            }
+            
+            const driverLink = `${baseUrl}/driver.html?id=${bookingId}${locationParams}`;
 
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
                           + `🔖 Mã cuốc: ${bookingId}\n`
@@ -161,11 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             showConfirmButton: false,
                             timer: 2000
                         }).then(() => {
-                            window.location.href = `track.html?id=${bookingId}`;
+                            window.location.href = `track.html?id=${bookingId}${locationParams}`;
                         });
                     } else {
                         alert('Gửi yêu cầu thành công! Đang chuyển sang màn hình theo dõi...');
-                        window.location.href = `track.html?id=${bookingId}`;
+                        window.location.href = `track.html?id=${bookingId}${locationParams}`;
                     }
                 } else {
                     if (typeof Swal !== 'undefined') {
