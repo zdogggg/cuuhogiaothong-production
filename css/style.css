@@ -200,8 +200,8 @@ img { max-width: 100%; height: auto; display: block; }
 /* --- HERO SECTION --- */
 .hero {
     position: relative;
-    padding-top: 60px;
-    padding-bottom: 120px;
+    padding-top: 120px;
+    padding-bottom: 180px;
     background: transparent;
     z-index: 1;
 }
@@ -226,10 +226,10 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-content {
     flex: 0 0 50%;
     padding: 30px;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.45);
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
     z-index: 2;
 }
 
