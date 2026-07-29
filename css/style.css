@@ -216,6 +216,9 @@ img { max-width: 100%; height: auto; display: block; }
     opacity: 1;
     z-index: -1;
 }
+.mobile-banner {
+    display: none;
+}
 
 .hero-container {
     display: flex;
@@ -805,9 +808,10 @@ img { max-width: 100%; height: auto; display: block; }
     .hotline-text small { display: none; }
 
     /* Hero */
-    .hero { padding-top: 40px; padding-bottom: 80px; }
-    .hero::after { background-position: 75% center; }
-    .hero-content { padding: 20px; background: rgba(255, 255, 255, 0.7); }
+    .mobile-banner { display: block; width: 100%; height: auto; }
+    .hero { padding-top: 0; padding-bottom: 40px; background: transparent; }
+    .hero::after { display: none; }
+    .hero-content { padding: 20px 0; background: transparent; box-shadow: none; backdrop-filter: none; }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content h1 span { font-size: 2.5rem; }
     .hero-subtitle { font-size: 1rem; }
