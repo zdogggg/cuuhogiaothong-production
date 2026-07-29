@@ -82,12 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Anti-Spam Rate Limiting (60 seconds)
+            // Anti-Spam Rate Limiting (15 seconds)
             const lastSentTime = localStorage.getItem('lastRescueSentTime');
             if (lastSentTime) {
                 const timeDiff = (Date.now() - parseInt(lastSentTime)) / 1000;
-                if (timeDiff < 60) {
-                    const timeLeft = Math.ceil(60 - timeDiff);
+                if (timeDiff < 15) {
+                    const timeLeft = Math.ceil(15 - timeDiff);
                     if (typeof Swal !== 'undefined') {
                         Swal.fire('Vui lòng đợi', `Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau ${timeLeft} giây.`, 'warning');
                     } else {
