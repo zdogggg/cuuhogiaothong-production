@@ -117,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Tạo mã cuốc ngẫu nhiên (ví dụ: CH123456)
             const bookingId = 'CH' + Math.floor(100000 + Math.random() * 900000);
-            const driverLink = `https://cuuhogiaothong.com/driver.html?id=${bookingId}`;
+            
+            // Tự động lấy tên miền hiện tại (chạy được cả ở localhost, github pages hay domain thật)
+            const baseUrl = window.location.origin + window.location.pathname.replace(/\/?(index\.html)?$/, '');
+            const driverLink = `${baseUrl}/driver.html?id=${bookingId}`;
 
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
                           + `🔖 Mã cuốc: ${bookingId}\n`
