@@ -22,11 +22,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Icon Xe Cứu Hộ
-const towTruckIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3093/3093370.png', // Thay bằng icon xe cứu hộ đẹp hơn nếu có
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
+// Icon Xe Cứu Hộ (Dùng Emoji để chống lỗi không load được ảnh do bản quyền)
+const towTruckIcon = L.divIcon({
+    html: '<div style="font-size: 32px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); line-height: 1;">🚒</div>',
+    className: 'custom-div-icon', // Không dùng class mặc định để loại bỏ viền trắng
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
 });
 
 let driverMarker = null;
