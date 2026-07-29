@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Tự động lấy tên miền hiện tại (chạy được cả ở localhost, github pages hay domain thật)
             let baseUrl = window.location.origin + window.location.pathname.replace(/\/?(index\.html)?$/, '');
-            if (baseUrl.startsWith('file://') || baseUrl === 'null') {
-                baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở localhost
+            if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở máy tính cá nhân
             }
             const driverLink = `${baseUrl}/driver.html?id=${bookingId}`;
 
