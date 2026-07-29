@@ -119,7 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const bookingId = 'CH' + Math.floor(100000 + Math.random() * 900000);
             
             // Tự động lấy tên miền hiện tại (chạy được cả ở localhost, github pages hay domain thật)
-            const baseUrl = window.location.origin + window.location.pathname.replace(/\/?(index\.html)?$/, '');
+            let baseUrl = window.location.origin + window.location.pathname.replace(/\/?(index\.html)?$/, '');
+            if (baseUrl.startsWith('file://') || baseUrl === 'null') {
+                baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở localhost
+            }
             const driverLink = `${baseUrl}/driver.html?id=${bookingId}`;
 
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
