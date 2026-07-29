@@ -114,12 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const now = new Date();
             const timeString = now.toLocaleString('vi-VN');
+            
+            // Tạo mã cuốc ngẫu nhiên (ví dụ: CH123456)
+            const bookingId = 'CH' + Math.floor(100000 + Math.random() * 900000);
+            const driverLink = `https://cuuhogiaothong.com/driver.html?id=${bookingId}`;
 
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
+                          + `🔖 Mã cuốc: ${bookingId}\n`
                           + `⏰ Thời gian: ${timeString}\n`
                           + `📞 SĐT Khách: ${phone}\n`
                           + `🛠 Dịch vụ: ${service}\n`
-                          + `📍 Vị trí: ${finalLocation}`;
+                          + `📍 Vị trí: ${finalLocation}\n\n`
+                          + `👉 [BẤM VÀO ĐÂY ĐỂ NHẬN CUỐC](${driverLink})`;
 
             const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
@@ -142,16 +148,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('lastRescueSentTime', Date.now().toString());
                     
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire(
-                            'Gửi thành công!',
-                            'Đội cứu hộ đã nhận được yêu cầu và sẽ liên hệ lại ngay.',
-                            'success'
-                        );
+                        Swal.fire({
+                            title: 'Gửi thành công!',
+                            text: 'Đội cứu hộ đã nhận được yêu cầu. Hệ thống đang chuyển sang màn hình theo dõi...',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            window.location.href = `track.html?id=${bookingId}`;
+                        });
                     } else {
-                        alert('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại ngay.');
+                        alert('Gửi yêu cầu thành công! Đang chuyển sang màn hình theo dõi...');
+                        window.location.href = `track.html?id=${bookingId}`;
                     }
-                    rescueForm.reset();
-                    mapLink = '';
                 } else {
                     if (typeof Swal !== 'undefined') {
                         Swal.fire('Lỗi', 'Có lỗi xảy ra khi gửi yêu cầu: ' + data.description, 'error');

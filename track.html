@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Theo Dõi Xe Cứu Hộ</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { height: 100vh; display: flex; flex-direction: column; }
+        
+        #map { flex: 1; width: 100%; z-index: 1; }
+        
+        .status-panel {
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+            border-radius: 20px 20px 0 0;
+            margin-top: -15px;
+            text-align: center;
+        }
+        
+        .status-title { font-size: 1.2rem; font-weight: 700; color: #d32f2f; margin-bottom: 5px; }
+        .status-desc { font-size: 0.9rem; color: #666; margin-bottom: 15px; }
+        
+        .pulse-loader {
+            width: 50px; height: 50px;
+            background-color: #ffca28;
+            border-radius: 100%;
+            animation: sk-scaleout 1.0s infinite ease-in-out;
+            margin: 0 auto 10px auto;
+        }
+        
+        @keyframes sk-scaleout {
+            0% { transform: scale(0); }
+            100% { transform: scale(1.0); opacity: 0; }
+        }
+        
+        .driver-info {
+            display: none; /* Hiện khi có tài xế nhận cuốc */
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .driver-info i { font-size: 24px; color: #d32f2f; }
+        .driver-details { text-align: left; }
+        .driver-details strong { display: block; color: #333; }
+        .driver-details span { font-size: 0.8rem; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <div class="status-panel">
+        <div id="loader" class="pulse-loader"></div>
+        <div id="statusTitle" class="status-title">Đang tìm xe cứu hộ...</div>
+        <div id="statusDesc" class="status-desc">Hệ thống đang kết nối với tài xế gần nhất. Vui lòng giữ máy.</div>
+        
+        <div id="driverInfo" class="driver-info">
+            <i class="fas fa-truck-pickup"></i>
+            <div class="driver-details">
+                <strong>Xe Cứu Hộ Đang Tới</strong>
+                <span id="distanceText">Khoảng cách: Đang tính toán...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- App Logic -->
+    <script src="js/track.js"></script>
+</body>
+</html>
