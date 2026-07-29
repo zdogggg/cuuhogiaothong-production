@@ -24,9 +24,23 @@ const bookingDisplay = document.getElementById('bookingDisplay');
 const btnStart = document.getElementById('btnStart');
 const btnStop = document.getElementById('btnStop');
 const statusText = document.getElementById('statusText');
-const radar = document.getElementById('radar');
+
+// Khởi tạo bản đồ Leaflet
+const map = L.map('map').setView([21.0285, 105.8542], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Icon Tài xế (xe cứu hộ)
+const driverIcon = L.divIcon({
+    html: '<div style="font-size: 32px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); line-height: 1;">🚒</div>',
+    className: 'custom-div-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+});
 
 let watchId = null;
+let driverMarker = null;
 
 if (!bookingId) {
     bookingDisplay.innerText = "LỖI: KHÔNG CÓ MÃ CUỐC";
@@ -59,11 +73,20 @@ btnStart.addEventListener('click', () => {
             // Giao diện
             btnStart.style.display = 'none';
             btnStop.style.display = 'block';
-            radar.style.display = 'flex';
             
+            // Cập nhật bản đồ
+            const newPos = [lat, lng];
+            if (!driverMarker) {
+                driverMarker = L.marker(newPos, {icon: driverIcon}).addTo(map);
+                map.setView(newPos, 15);
+            } else {
+                driverMarker.setLatLng(newPos);
+                map.panTo(newPos);
+            }
+
             // Cập nhật Firebase
             if (db) {
-                db.ref('trackings/' + bookingId).set({
+                db.ref('trackings/' + bookingId).update({
                     lat: lat,
                     lng: lng,
                     timestamp: Date.now(),
@@ -106,7 +129,6 @@ btnStop.addEventListener('click', () => {
             }
             
             statusText.innerText = "Đã hoàn thành cuốc xe.";
-            radar.style.display = 'none';
             btnStop.disabled = true;
             btnStop.innerText = "ĐÃ KẾT THÚC";
             
