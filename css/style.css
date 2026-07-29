@@ -202,7 +202,7 @@ img { max-width: 100%; height: auto; display: block; }
     position: relative;
     padding-top: 60px;
     padding-bottom: 120px;
-    background: linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.8) 45%, rgba(245,245,245,0.2) 100%);
+    background: transparent;
     z-index: 1;
 }
 
@@ -212,7 +212,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: 0; right: 0; bottom: 0; left: 0;
     background-image: url('../images/bannerngang.png');
     background-size: cover;
-    background-position: center;
+    background-position: right center;
     opacity: 1;
     z-index: -1;
 }
@@ -225,7 +225,11 @@ img { max-width: 100%; height: auto; display: block; }
 
 .hero-content {
     flex: 0 0 50%;
-    padding-right: 30px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    backdrop-filter: blur(5px);
     z-index: 2;
 }
 
@@ -799,7 +803,7 @@ img { max-width: 100%; height: auto; display: block; }
 
     /* Hero */
     .hero { padding-top: 25px; padding-bottom: 30px; }
-    .hero-content { padding-right: 0; }
+    .hero-content { padding: 20px; }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content h1 span { font-size: 2.5rem; }
     .hero-subtitle { font-size: 1rem; }
