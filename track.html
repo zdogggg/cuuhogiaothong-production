@@ -19,24 +19,46 @@
         #map { flex: 1; width: 100%; z-index: 1; }
         
         .status-panel {
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
-            z-index: 10;
-            border-radius: 20px 20px 0 0;
-            margin-top: -15px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px 20px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border-radius: 24px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .status-panel::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 5px;
+            background: #e0e0e0;
+            border-radius: 10px;
         }
         
-        .status-title { font-size: 1.2rem; font-weight: 700; color: #d32f2f; margin-bottom: 5px; }
-        .status-desc { font-size: 0.9rem; color: #666; margin-bottom: 15px; }
+        .status-title { font-size: 1.3rem; font-weight: 800; color: #d32f2f; margin-bottom: 5px; letter-spacing: -0.5px; }
+        .status-desc { font-size: 0.95rem; color: #555; margin-bottom: 15px; line-height: 1.4; }
         
         .pulse-loader {
-            width: 50px; height: 50px;
+            width: 60px; height: 60px;
             background-color: #ffca28;
             border-radius: 100%;
-            animation: sk-scaleout 1.0s infinite ease-in-out;
-            margin: 0 auto 10px auto;
+            animation: sk-scaleout 1.2s infinite ease-in-out;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 20px rgba(255, 202, 40, 0.4);
         }
         
         @keyframes sk-scaleout {
@@ -45,18 +67,33 @@
         }
         
         .driver-info {
-            display: none; /* Hiện khi có tài xế nhận cuốc */
+            background: #fff;
+            padding: 15px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            margin-top: 15px;
+            border: 1px solid #f4f4f4;
+            transition: all 0.3s ease;
+        }
+        
+        .driver-info:hover {
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .driver-icon-wrap {
+            width: 45px;
+            height: 45px;
+            background: #ffebee;
+            border-radius: 12px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 10px;
         }
-        .driver-info i { font-size: 24px; color: #d32f2f; }
+
         .driver-details { text-align: left; }
-        .driver-details strong { display: block; color: #333; }
-        .driver-details span { font-size: 0.8rem; color: #666; }
+        .driver-details strong { display: block; color: #222; font-size: 1.05rem; }
+        .driver-details span { font-size: 0.85rem; color: #777; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -69,12 +106,14 @@
         <div id="statusDesc" class="status-desc">Hệ thống đang kết nối với tài xế gần nhất. Vui lòng giữ máy.</div>
         
         <div id="driverInfo" class="driver-info" style="display: none; align-items: center; gap: 15px;">
-            <i class="fas fa-truck-pickup" style="font-size: 24px; color: #d32f2f;"></i>
+            <div class="driver-icon-wrap">
+                <i class="fas fa-truck-pickup" style="font-size: 20px; color: #d32f2f;"></i>
+            </div>
             <div class="driver-details" style="flex: 1;">
                 <strong>Xe Cứu Hộ Đang Tới</strong>
                 <span id="distanceText">Khoảng cách: Đang tính toán...</span>
             </div>
-            <a href="tel:19009999" style="background: #2e7d32; color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"><i class="fas fa-phone-alt"></i></a>
+            <a href="tel:19009999" style="background: linear-gradient(135deg, #43a047, #2e7d32); color: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4); transition: transform 0.2s;"><i class="fas fa-phone-alt" style="font-size: 1.1rem;"></i></a>
         </div>
     </div>
 

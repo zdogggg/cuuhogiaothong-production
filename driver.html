@@ -18,23 +18,50 @@
         #map { flex: 1; width: 100%; z-index: 1; }
 
         .control-panel {
-            background: #fff; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); 
-            z-index: 10; margin-top: -15px; text-align: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px 20px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .control-panel::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 5px;
+            background: #e0e0e0;
+            border-radius: 10px;
         }
         
-        h1 { color: #d32f2f; font-size: 1.5rem; margin-bottom: 5px; }
-        .booking-id { font-size: 1.2rem; font-weight: 700; color: #333; margin-bottom: 20px; padding: 10px; background: #e0e0e0; border-radius: 8px; display: inline-block;}
+        h1 { color: #d32f2f; font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.5px; }
+        .booking-id { font-size: 0.95rem; font-weight: 600; color: #555; background: #f0f0f0; padding: 5px 12px; border-radius: 12px; display: inline-block; margin-bottom: 10px; }
         
-        .status { margin-bottom: 30px; font-size: 1rem; color: #666; }
+        .status { font-size: 0.95rem; color: #555; margin-bottom: 15px; font-weight: 500; }
         
         .btn {
-            display: block; width: 100%; padding: 15px; border: none; border-radius: 10px;
-            font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s;
-            margin-bottom: 15px;
+            width: 100%; padding: 14px; font-size: 1.1rem; font-weight: 700; color: #fff;
+            border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
         }
-        .btn-start { background: #ffca28; color: #333; }
-        .btn-start:active { background: #ffb300; }
-        .btn-stop { background: #e0e0e0; color: #333; display: none; }
+        .btn-start { background: linear-gradient(135deg, #ffca28, #ffb300); color: #333; }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 202, 40, 0.4); }
+        .btn-stop { background: linear-gradient(135deg, #43a047, #2e7d32); display: none; }
+        .btn-stop:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4); }
         
         .pulse-ring {
             width: 80px; height: 80px; background: rgba(211, 47, 47, 0.2); border-radius: 50%;
