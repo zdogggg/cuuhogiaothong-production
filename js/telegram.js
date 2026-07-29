@@ -19,12 +19,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     mapLink = `https://maps.google.com/?q=${lat},${lng}`;
                     locationInput.value = `Đã lấy vị trí (Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)})`;
                     icon.className = 'fas fa-map-marker-alt';
+                    
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Lấy vị trí thành công!',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
                 }, (error) => {
-                    alert('Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi lấy vị trí',
+                            text: 'Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.'
+                        });
+                    } else {
+                        alert('Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.');
+                    }
                     icon.className = 'fas fa-map-marker-alt';
                 });
             } else {
-                alert('Trình duyệt của bạn không hỗ trợ định vị.');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Lỗi', 'Trình duyệt của bạn không hỗ trợ định vị.', 'error');
+                } else {
+                    alert('Trình duyệt của bạn không hỗ trợ định vị.');
+                }
             }
         });
     }
@@ -37,9 +60,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const location = locationInput.value;
             const service = document.getElementById('rescueService').value;
             
+            
+            // Validate input
             if (!phone || !location || !service) {
-                alert('Vui lòng điền đầy đủ thông tin!');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Thiếu thông tin', 'Vui lòng điền đầy đủ thông tin!', 'warning');
+                } else {
+                    alert('Vui lòng điền đầy đủ thông tin!');
+                }
                 return;
+            }
+
+            // Validate phone format (Vietnamese)
+            const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+            if (!phoneRegex.test(phone)) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Sai định dạng', 'Vui lòng nhập đúng số điện thoại di động (10 số)!', 'error');
+                } else {
+                    alert('Vui lòng nhập đúng số điện thoại di động (10 số)!');
+                }
+                return;
+            }
+
+            // Anti-Spam Rate Limiting (60 seconds)
+            const lastSentTime = localStorage.getItem('lastRescueSentTime');
+            if (lastSentTime) {
+                const timeDiff = (Date.now() - parseInt(lastSentTime)) / 1000;
+                if (timeDiff < 60) {
+                    const timeLeft = Math.ceil(60 - timeDiff);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Vui lòng đợi', `Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau ${timeLeft} giây.`, 'warning');
+                    } else {
+                        alert(`Vui lòng đợi ${timeLeft} giây trước khi gửi yêu cầu tiếp theo.`);
+                    }
+                    return;
+                }
             }
 
             // TODO: Thay thế bằng Token và Chat ID thật của bạn
@@ -84,14 +139,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 
                 if (data.ok) {
-                    alert('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại ngay.');
+                    localStorage.setItem('lastRescueSentTime', Date.now().toString());
+                    
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire(
+                            'Gửi thành công!',
+                            'Đội cứu hộ đã nhận được yêu cầu và sẽ liên hệ lại ngay.',
+                            'success'
+                        );
+                    } else {
+                        alert('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại ngay.');
+                    }
                     rescueForm.reset();
                     mapLink = '';
                 } else {
-                    alert('Có lỗi xảy ra khi gửi yêu cầu qua Telegram: ' + data.description);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Lỗi', 'Có lỗi xảy ra khi gửi yêu cầu: ' + data.description, 'error');
+                    } else {
+                        alert('Có lỗi xảy ra khi gửi yêu cầu qua Telegram: ' + data.description);
+                    }
                 }
             } catch (error) {
-                alert('Lỗi kết nối. Không thể gửi yêu cầu lúc này.');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Lỗi kết nối', 'Không thể kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+                } else {
+                    alert('Lỗi kết nối. Không thể gửi yêu cầu lúc này.');
+                }
                 console.error(error);
             } finally {
                 btnSubmitRescue.innerHTML = originalBtnText;
