@@ -125,20 +125,27 @@
                         <h3>YÊU CẦU CỨU HỘ NGAY</h3>
                         <p>Nhập thông tin để được hỗ trợ nhanh nhất</p>
                     </div>
-                    <form class="qr-form" onsubmit="event.preventDefault(); alert('Yêu cầu đã được gửi!');">
+                    <form class="qr-form" id="rescueForm">
                         <div class="input-group">
-                            <input type="text" placeholder="Nhập địa điểm của bạn...">
-                            <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                            <input type="tel" id="rescuePhone" placeholder="Nhập SĐT của bạn..." required>
+                            <i class="fas fa-phone-alt" style="color: var(--primary-color);"></i>
                         </div>
                         <div class="input-group">
-                            <select>
+                            <input type="text" id="rescueLocation" placeholder="Nhập địa điểm..." required>
+                            <button type="button" id="btnGetLocation" class="btn-get-location" title="Lấy vị trí hiện tại">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <select id="rescueService" required>
                                 <option value="">Chọn dịch vụ</option>
-                                <option value="keo-xe">Kéo xe</option>
-                                <option value="kich-binh">Kích bình</option>
-                                <option value="thay-lop">Thay lốp</option>
+                                <option value="Kéo xe">Kéo xe</option>
+                                <option value="Kích bình">Kích bình</option>
+                                <option value="Thay lốp">Thay lốp</option>
+                                <option value="Khác">Khác</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn-submit">YÊU CẦU CỨU HỘ <i
+                        <button type="submit" id="btnSubmitRescue" class="btn-submit">YÊU CẦU CỨU HỘ <i
                                 class="fas fa-arrow-right"></i></button>
                     </form>
                 </div>

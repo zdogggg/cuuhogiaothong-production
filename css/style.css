@@ -385,6 +385,32 @@ img { max-width: 100%; height: auto; display: block; }
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
+    pointer-events: none;
+}
+.btn-get-location {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+.btn-get-location:hover {
+    background: var(--primary-dark);
+}
+.btn-get-location i {
+    position: static;
+    transform: none;
+    color: var(--white) !important;
 }
 
 .btn-submit {
