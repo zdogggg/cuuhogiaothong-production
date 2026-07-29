@@ -110,9 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSubmitRescue.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG GỬI...';
             btnSubmitRescue.disabled = true;
 
-            // Format phone to international (+84) so Telegram makes it clickable
-            const callablePhone = phone.startsWith('0') ? '+84' + phone.slice(1) : phone;
-
             const finalLocation = mapLink ? `${location}\n📍 Bản đồ: ${mapLink}` : location;
             
             const now = new Date();
@@ -120,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
                           + `⏰ Thời gian: ${timeString}\n`
-                          + `📞 SĐT Khách: ${callablePhone}\n`
+                          + `📞 SĐT Khách: ${phone}\n`
                           + `🛠 Dịch vụ: ${service}\n`
                           + `📍 Vị trí: ${finalLocation}`;
 
