@@ -802,7 +802,7 @@ img { max-width: 100%; height: auto; display: block; }
         font-size: 1.5rem;
     }
     .header-hotline { width: auto; justify-content: center; align-items: center; border-radius: 8px; padding: 6px 10px; order: 3; gap: 6px; display: flex; }
-    .hotline-icon-box { width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; align-self: center; margin: auto 0; }
+    .hotline-icon-box { background: transparent; color: var(--accent-color); width: auto; height: auto; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; align-self: center; margin: auto 0; }
     .hotline-text { display: flex; flex-direction: column; justify-content: center; }
     .hotline-text strong { font-size: 0.9rem; }
     .hotline-text span { font-size: 0.55rem; }
