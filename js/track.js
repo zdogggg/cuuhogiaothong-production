@@ -48,9 +48,17 @@ if (!bookingId) {
         if (data && data.lat && data.lng) {
             // Cập nhật giao diện khi có tín hiệu
             document.getElementById('loader').style.display = 'none';
-            document.getElementById('statusTitle').innerText = 'Xe cứu hộ đang tới!';
-            document.getElementById('statusTitle').style.color = '#2e7d32'; // Xanh lá
-            document.getElementById('statusDesc').innerText = 'Tài xế đang trên đường đến vị trí của bạn.';
+            
+            if (data.status === 'arrived') {
+                document.getElementById('statusTitle').innerText = 'ĐÃ HOÀN THÀNH CUỐC XE!';
+                document.getElementById('statusTitle').style.color = '#1976d2'; // Xanh dương
+                document.getElementById('statusDesc').innerText = 'Xe cứu hộ đã đến vị trí của bạn thành công.';
+                document.getElementById('distanceText').innerText = 'Hoàn thành';
+            } else {
+                document.getElementById('statusTitle').innerText = 'Xe cứu hộ đang tới!';
+                document.getElementById('statusTitle').style.color = '#2e7d32'; // Xanh lá
+                document.getElementById('statusDesc').innerText = 'Tài xế đang trên đường đến vị trí của bạn.';
+            }
             document.getElementById('driverInfo').style.display = 'flex';
             
             const newPos = [data.lat, data.lng];
