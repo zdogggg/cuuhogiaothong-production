@@ -809,9 +809,9 @@ img { max-width: 100%; height: auto; display: block; }
 
     /* Hero */
     .mobile-banner { display: block; width: 100%; height: auto; }
-    .hero { padding-top: 0; padding-bottom: 40px; background: transparent; }
+    .hero { padding-top: 0; padding-bottom: 40px; background: #f8f9fa; }
     .hero::after { display: none; }
-    .hero-content { padding: 20px 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+    .hero-content { padding: 25px; background: #ffffff; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-radius: 16px; margin-top: -30px; position: relative; z-index: 5; backdrop-filter: none; }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content h1 span { font-size: 2.5rem; }
     .hero-subtitle { font-size: 1rem; }
