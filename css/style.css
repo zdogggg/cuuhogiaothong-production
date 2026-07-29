@@ -380,6 +380,13 @@ img { max-width: 100%; height: auto; display: block; }
     font-size: 0.95rem;
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
 }
+.input-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+}
 .input-group i {
     position: absolute;
     right: 15px;
