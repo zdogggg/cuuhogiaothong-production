@@ -801,8 +801,8 @@ img { max-width: 100%; height: auto; display: block; }
         height: 35px;
         font-size: 1.5rem;
     }
-    .header-hotline { width: auto; justify-content: center; border-radius: 8px; padding: 6px 10px; order: 3; gap: 6px; }
-    .hotline-icon-box { width: 24px; height: 24px; font-size: 0.8rem; }
+    .header-hotline { width: auto; justify-content: center; align-items: center; border-radius: 8px; padding: 6px 10px; order: 3; gap: 6px; }
+    .hotline-icon-box { width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; align-self: center; }
     .hotline-text strong { font-size: 0.9rem; }
     .hotline-text span { font-size: 0.55rem; }
     .hotline-text small { display: none; }
