@@ -1,7 +1,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyAalG0Z_esnaZpnbRTTX45GSOtlK5Ee-Xs",
     authDomain: "cuuhogiaothong123.firebaseapp.com",
-    databaseURL: "https://cuuhogiaothong123-default-rtdb.firebaseio.com",
+    databaseURL: "https://cuuhogiaothong123-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "cuuhogiaothong123",
     storageBucket: "cuuhogiaothong123.firebasestorage.app",
     messagingSenderId: "1069997605416",
