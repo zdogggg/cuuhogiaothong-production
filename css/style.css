@@ -780,26 +780,28 @@ img { max-width: 100%; height: auto; display: block; }
     /* Header */
     .header-container {
         flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-wrap: nowrap;
+        justify-content: space-between;
         align-items: center;
-        position: relative;
         height: auto;
-        padding: 15px 0;
-        gap: 15px;
+        padding: 10px 15px;
+        gap: 5px;
     }
-    .logo { justify-content: center; }
+    .logo { justify-content: center; order: 2; flex: 1; }
+    .logo img { height: 40px !important; }
     .logo-slogan { display: none; }
     .menu-toggle {
-        position: absolute;
-        top: 15px;
-        right: 0;
+        position: static;
+        order: 1;
+        width: 35px;
+        height: 35px;
+        font-size: 1.5rem;
     }
-    .header-hotline { width: 100%; justify-content: center; border-radius: 30px; padding: 8px 20px; order: 3; }
-    .hotline-icon-box { width: 28px; height: 28px; font-size: 0.9rem; }
-    .hotline-text strong { font-size: 1.1rem; }
-    .hotline-text span { font-size: 0.65rem; }
-    .hotline-text small { font-size: 0.6rem; }
+    .header-hotline { width: auto; justify-content: center; border-radius: 8px; padding: 6px 10px; order: 3; gap: 6px; }
+    .hotline-icon-box { width: 24px; height: 24px; font-size: 0.8rem; }
+    .hotline-text strong { font-size: 0.9rem; }
+    .hotline-text span { font-size: 0.55rem; }
+    .hotline-text small { display: none; }
 
     /* Hero */
     .hero { padding-top: 25px; padding-bottom: 30px; }
