@@ -202,18 +202,19 @@ img { max-width: 100%; height: auto; display: block; }
     position: relative;
     padding-top: 60px;
     padding-bottom: 120px;
-    background: linear-gradient(to right, #f4f4f4 40%, transparent 100%);
+    background: linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.8) 45%, rgba(245,245,245,0.2) 100%);
+    z-index: 1;
 }
 
 .hero::after {
     content: '';
     position: absolute;
-    top: 0; right: 0; bottom: 0; left: 50%;
+    top: 0; right: 0; bottom: 0; left: 0;
     background-image: url('../images/bannerngang.png');
     background-size: cover;
     background-position: center;
-    opacity: 0.2;
-    z-index: -2;
+    opacity: 1;
+    z-index: -1;
 }
 
 .hero-container {
