@@ -43,8 +43,6 @@ let watchId = null;
 let driverMarker = null;
 
 // Lấy mã bookingId và tọa độ khách hàng từ URL
-const urlParams = new URLSearchParams(window.location.search);
-const bookingId = urlParams.get('id');
 const customerLat = urlParams.get('lat');
 const customerLng = urlParams.get('lng');
 
