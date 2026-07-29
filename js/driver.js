@@ -41,6 +41,8 @@ const driverIcon = L.divIcon({
 
 let watchId = null;
 let driverMarker = null;
+let routingControl = null;
+let isFirstLocation = true;
 
 // Lấy mã bookingId và tọa độ khách hàng từ URL
 const customerLat = urlParams.get('lat');
@@ -96,10 +98,44 @@ btnStart.addEventListener('click', () => {
             const newPos = [lat, lng];
             if (!driverMarker) {
                 driverMarker = L.marker(newPos, {icon: driverIcon}).addTo(map);
-                map.setView(newPos, 15);
             } else {
                 driverMarker.setLatLng(newPos);
-                map.panTo(newPos);
+            }
+            
+            // Vẽ đường đi nếu có tọa độ khách
+            if (customerLat && customerLng) {
+                if (!routingControl) {
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(lat, lng),
+                            L.latLng(customerLat, customerLng)
+                        ],
+                        createMarker: function() { return null; }, // Ẩn marker mặc định
+                        addWaypoints: false,
+                        routeWhileDragging: false,
+                        show: false, // Ẩn bảng hướng dẫn chi tiết
+                        lineOptions: {
+                            styles: [{color: '#007bff', opacity: 0.8, weight: 5, dashArray: '10, 10'}]
+                        }
+                    }).addTo(map);
+                } else {
+                    routingControl.setWaypoints([
+                        L.latLng(lat, lng),
+                        L.latLng(customerLat, customerLng)
+                    ]);
+                }
+            }
+
+            // Chỉ tự động đưa map về giữa ở lần đầu tiên hoặc nếu khách k có tọa độ
+            if (isFirstLocation) {
+                if (customerLat && customerLng) {
+                    // Fit map để thấy cả 2 điểm
+                    const bounds = L.latLngBounds([newPos, [customerLat, customerLng]]);
+                    map.fitBounds(bounds, {padding: [50, 50]});
+                } else {
+                    map.setView(newPos, 15);
+                }
+                isFirstLocation = false;
             }
 
             // Cập nhật Firebase

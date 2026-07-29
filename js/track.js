@@ -31,6 +31,8 @@ const towTruckIcon = L.divIcon({
 });
 
 let driverMarker = null;
+let routingControl = null;
+let isFirstLocation = true;
 
 // Lấy mã bookingId và tọa độ khách hàng từ URL (?id=CH123456&lat=...&lng=...)
 const urlParams = new URLSearchParams(window.location.search);
@@ -82,10 +84,52 @@ if (!bookingId) {
             // Vẽ/Cập nhật Marker trên bản đồ
             if (!driverMarker) {
                 driverMarker = L.marker(newPos, {icon: towTruckIcon}).addTo(map);
-                map.setView(newPos, 15);
             } else {
                 driverMarker.setLatLng(newPos);
-                map.panTo(newPos);
+            }
+            
+            // Vẽ đường đi
+            if (customerLat && customerLng) {
+                if (!routingControl) {
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(data.lat, data.lng),
+                            L.latLng(customerLat, customerLng)
+                        ],
+                        createMarker: function() { return null; },
+                        addWaypoints: false,
+                        routeWhileDragging: false,
+                        show: false,
+                        lineOptions: {
+                            styles: [{color: '#d32f2f', opacity: 0.8, weight: 5, dashArray: '10, 10'}]
+                        }
+                    }).addTo(map);
+                    
+                    // Cập nhật text khoảng cách dựa trên routing event
+                    routingControl.on('routesfound', function(e) {
+                        const routes = e.routes;
+                        const distance = routes[0].summary.totalDistance; // mét
+                        if (data.status !== 'arrived') {
+                            document.getElementById('distanceText').innerText = `Khoảng cách: ${(distance/1000).toFixed(1)} km`;
+                        }
+                    });
+                } else {
+                    routingControl.setWaypoints([
+                        L.latLng(data.lat, data.lng),
+                        L.latLng(customerLat, customerLng)
+                    ]);
+                }
+            }
+
+            // Chỉ đưa map về giữa ở lần đầu tiên hoặc nếu khách k có tọa độ
+            if (isFirstLocation) {
+                if (customerLat && customerLng) {
+                    const bounds = L.latLngBounds([newPos, [customerLat, customerLng]]);
+                    map.fitBounds(bounds, {padding: [50, 50]});
+                } else {
+                    map.setView(newPos, 15);
+                }
+                isFirstLocation = false;
             }
         }
     });
