@@ -164,19 +164,17 @@ function openPricingModal(id = null) {
         width: 600,
         html: `
             <div class="form-group">
-                <label>Nhóm Dịch Vụ (Nhập tay hoặc chọn)</label>
-                <input id="p_group" class="swal2-input" list="group_list" placeholder="VD: Dịch vụ Xử lý tại chỗ" value="${item.group.replace(/"/g, '&quot;')}" style="margin:0; width:100%;">
-                <datalist id="group_list">
-                    <option value="Dịch vụ Xử lý tại chỗ">
-                    <option value="Dịch vụ Cẩu kéo">
-                    <option value="Kéo xe">
-                    <option value="Kích bình">
-                    <option value="Thay lốp">
-                    <option value="Tiếp nhiên liệu">
-                    <option value="Sửa chữa lưu động">
-                    <option value="Cứu hộ xe tải">
-                    <option value="Dịch vụ Khác">
-                </datalist>
+                <label>Nhóm Dịch Vụ (Nhập tay hoặc chọn nhanh)</label>
+                <input id="p_group" class="swal2-input" placeholder="VD: Dịch vụ Xử lý tại chỗ" value="${item.group.replace(/"/g, '&quot;')}" style="margin:0; width:100%;">
+                <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Dịch vụ Xử lý tại chỗ</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Dịch vụ Cẩu kéo</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Kéo xe</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Kích bình</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Thay lốp</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Tiếp nhiên liệu</span>
+                    <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; color: #555;" onclick="document.getElementById('p_group').value = this.innerText">Cứu hộ xe tải</span>
+                </div>
             </div>
             <div class="form-group">
                 <label>Loại Xe Cần Cứu Hộ</label>
@@ -202,6 +200,7 @@ function openPricingModal(id = null) {
             </div>
         `,
         showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
         confirmButtonText: 'Lưu Dữ Liệu',
         cancelButtonText: 'Hủy',
         preConfirm: () => {
@@ -317,6 +316,7 @@ function openNewsModal(id = null) {
             </div>
         `,
         showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
         confirmButtonText: 'Lưu Bài Viết',
         cancelButtonText: 'Hủy',
         preConfirm: () => {
