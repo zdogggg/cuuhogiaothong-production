@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-}
+});
 
 function formatPriceDisplay(val) {
     if (!val) return '-';
@@ -153,4 +153,4 @@ function formatPriceDisplay(val) {
         str += ' VNĐ';
     }
     return str;
-});
+}
