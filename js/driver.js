@@ -78,7 +78,33 @@ if (!bookingId) {
     }
 }
 
-btnStart.addEventListener('click', () => {
+// Wake Lock API để giữ sáng màn hình
+let wakeLock = null;
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock is active');
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock was released');
+            });
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
+    }
+}
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release().then(() => { wakeLock = null; });
+    }
+}
+document.addEventListener('visibilitychange', () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        requestWakeLock();
+    }
+});
+
+btnStart.addEventListener('click', async () => {
     if (!navigator.geolocation) {
         Swal.fire('Lỗi', 'Thiết bị của bạn không hỗ trợ định vị GPS.', 'error');
         return;
@@ -89,6 +115,9 @@ btnStart.addEventListener('click', () => {
     }
 
     statusText.innerText = "Đang xin quyền vị trí...";
+    
+    // Xin quyền Wake Lock
+    await requestWakeLock();
     
     // Bật watchPosition (cập nhật liên tục khi di chuyển)
     watchId = navigator.geolocation.watchPosition(
@@ -178,6 +207,9 @@ btnStop.addEventListener('click', () => {
         cancelButtonText: 'Hủy'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Giải phóng Wake Lock
+            releaseWakeLock();
+            
             // Tắt theo dõi GPS
             if (watchId !== null) {
                 navigator.geolocation.clearWatch(watchId);

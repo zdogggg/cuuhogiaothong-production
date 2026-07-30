@@ -25,7 +25,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Icon Xe Cứu Hộ (Dùng Emoji để chống lỗi không load được ảnh do bản quyền)
 const towTruckIcon = L.divIcon({
     html: '<div style="font-size: 32px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); line-height: 1;">🚒</div>',
-    className: 'custom-div-icon', // Không dùng class mặc định để loại bỏ viền trắng
+    className: 'custom-div-icon animated-marker', // Thêm animated-marker
     iconSize: [32, 32],
     iconAnchor: [16, 16]
 });
@@ -66,16 +66,29 @@ if (!bookingId) {
         if (data && data.lat && data.lng) {
             // Cập nhật giao diện khi có tín hiệu
             document.getElementById('loader').style.display = 'none';
+            document.getElementById('progressBlock').style.display = 'block';
             
             if (data.status === 'arrived') {
                 document.getElementById('statusTitle').innerText = 'ĐÃ HOÀN THÀNH CUỐC XE!';
                 document.getElementById('statusTitle').style.color = '#1976d2'; // Xanh dương
                 document.getElementById('statusDesc').innerText = 'Xe cứu hộ đã đến vị trí của bạn thành công.';
                 document.getElementById('distanceText').innerText = 'Hoàn thành';
+                
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('progressFill').style.background = '#43a047';
+                document.getElementById('step1').className = 'step done';
+                document.getElementById('step2').className = 'step done';
+                document.getElementById('step3').className = 'step done';
             } else {
                 document.getElementById('statusTitle').innerText = 'Xe cứu hộ đang tới!';
                 document.getElementById('statusTitle').style.color = '#2e7d32'; // Xanh lá
-                document.getElementById('statusDesc').innerText = 'Tài xế đang trên đường đến vị trí của bạn.';
+                document.getElementById('statusDesc').innerText = 'Tài xế đang di chuyển đến vị trí của bạn.';
+                
+                document.getElementById('progressFill').style.width = '50%';
+                document.getElementById('progressFill').style.background = '#ffb300';
+                document.getElementById('step1').className = 'step done';
+                document.getElementById('step2').className = 'step active';
+                document.getElementById('step3').className = 'step';
             }
             document.getElementById('driverInfo').style.display = 'flex';
             
@@ -105,12 +118,14 @@ if (!bookingId) {
                         }
                     }).addTo(map);
                     
-                    // Cập nhật text khoảng cách dựa trên routing event
+                    // Cập nhật text khoảng cách và ETA
                     routingControl.on('routesfound', function(e) {
                         const routes = e.routes;
                         const distance = routes[0].summary.totalDistance; // mét
+                        const time = routes[0].summary.totalTime; // giây
                         if (data.status !== 'arrived') {
-                            document.getElementById('distanceText').innerText = `Khoảng cách: ${(distance/1000).toFixed(1)} km`;
+                            const minutes = Math.ceil(time / 60);
+                            document.getElementById('distanceText').innerHTML = `Khoảng cách: ${(distance/1000).toFixed(1)} km<br><span style="color:#d32f2f; font-weight:700;">Dự kiến: ${minutes} phút</span>`;
                         }
                     });
                 } else {
