@@ -227,7 +227,12 @@ btnStop.addEventListener('click', () => {
             btnStop.disabled = true;
             btnStop.innerText = "ĐÃ KẾT THÚC";
             
-            Swal.fire('Thành công', 'Đã tắt chia sẻ định vị.', 'success');
+            Swal.fire({
+                title: 'Thành công',
+                text: 'Đã tắt chia sẻ định vị.',
+                icon: 'success',
+                confirmButtonColor: '#d32f2f'
+            });
         }
     });
 });
