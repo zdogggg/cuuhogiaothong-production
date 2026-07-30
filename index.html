@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cứu Hộ Giao Thông 123 - Vàng Đỏ</title>
-    <meta name="description" content="Dịch vụ cứu hộ giao thông 24/7, có mặt sau 15-30 phút. Hỗ trợ kéo xe, kích bình, thay lốp tận nơi.">
+    <meta name="description"
+        content="Dịch vụ cứu hộ giao thông 24/7, có mặt sau 15-30 phút. Hỗ trợ kéo xe, kích bình, thay lốp tận nơi.">
     <meta name="keywords" content="cứu hộ giao thông, cứu hộ ô tô, kéo xe, kích bình, thay lốp, cứu hộ 24/7">
     <meta property="og:title" content="Cứu Hộ Giao Thông 123">
-    <meta property="og:description" content="Dịch vụ cứu hộ giao thông uy tín 24/7. Hỗ trợ nhanh chóng, an toàn, giá hợp lý.">
+    <meta property="og:description"
+        content="Dịch vụ cứu hộ giao thông uy tín 24/7. Hỗ trợ nhanh chóng, an toàn, giá hợp lý.">
     <meta property="og:image" content="images/bannerngang.png">
     <meta property="og:type" content="website">
     <!-- Google Fonts -->
@@ -31,7 +33,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
-        
+
         /* SweetAlert2 Button Override */
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
             background-color: var(--primary-color) !important;
@@ -39,6 +41,7 @@
             border-radius: 8px !important;
             font-family: var(--font-main) !important;
         }
+
         div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm:focus {
             box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.3) !important;
         }
@@ -147,7 +150,8 @@
                         </div>
                         <div class="input-group">
                             <input type="text" id="rescueLocation" placeholder="Nhập địa điểm..." required>
-                            <button type="button" id="btnGetLocation" class="btn-get-location" title="Lấy vị trí hiện tại">
+                            <button type="button" id="btnGetLocation" class="btn-get-location"
+                                title="Lấy vị trí hiện tại">
                                 <i class="fas fa-map-marker-alt"></i>
                             </button>
                         </div>
@@ -208,6 +212,17 @@
                     <p>Cứu hộ xe tải, container, xe khách chuyên nghiệp</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing section-padding" id="pricing" style="background: var(--light-bg);">
+        <div class="container">
+            <h2 class="section-title">BẢNG GIÁ THAM KHẢO</h2>
+            <div class="pricing-grid" id="publicPricingList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 800px; margin: 0 auto;">
+                <div style="text-align: center; grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Đang tải bảng giá...</div>
+            </div>
+            <p style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9rem;">* Mức giá trên mang tính chất tham khảo. Chi phí thực tế tùy thuộc vào tình trạng sự cố và khoảng cách.</p>
         </div>
     </section>
 
@@ -345,6 +360,16 @@
         </div>
     </section>
 
+    <!-- News Section -->
+    <section class="news section-padding" id="news" style="background: var(--white);">
+        <div class="container">
+            <h2 class="section-title">TIN TỨC CẬP NHẬT</h2>
+            <div class="news-grid" id="publicNewsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                <div style="text-align: center; grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Đang tải tin tức...</div>
+            </div>
+        </div>
+    </section>
+
     <!-- Testimonials -->
     <section class="testimonials section-padding">
         <div class="container">
@@ -404,7 +429,7 @@
     <section class="pre-footer">
         <div class="container pf-container">
             <div class="pf-left">
-                <img src="images/logo.png" alt="Logo Cứu hộ" style="max-height: 150px; object-fit: contain;">
+                <img src="images/logovang.png" alt="Logo Cứu hộ" style="max-height: 150px; object-fit: contain;">
             </div>
             <div class="pf-center">
                 <h2>CỨU HỘ GIAO THÔNG 123</h2>
@@ -490,7 +515,8 @@
     <!-- Floating Contact Buttons -->
     <div class="floating-contact">
         <a href="https://zalo.me/0989123123" target="_blank" class="float-btn float-zalo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" style="width: 35px; height: 35px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo"
+                style="width: 35px; height: 35px;">
         </a>
         <a href="tel:0989123123" class="float-btn float-phone">
             <i class="fas fa-phone-alt"></i>
@@ -499,8 +525,11 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="js/main.js"></script>
     <script src="js/telegram.js"></script>
+    <script src="js/public_data.js"></script>
 </body>
 
 </html>
