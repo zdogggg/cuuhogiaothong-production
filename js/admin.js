@@ -146,7 +146,7 @@ function loadPricingData() {
                 <td style="color: #d32f2f; font-weight: 600;">${item.basePrice || '-'}</td>
                 <td style="color: #f57c00; font-weight: 600;">${item.extraPrice || '-'}</td>
                 <td>
-                    <button class="action-btn edit" onclick="editPricing('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn edit" onclick="openPricingModal('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
                     <button class="action-btn" onclick="deletePricing('${key}')" title="Xóa"><i class="fas fa-trash-alt"></i></button>
                 </td>
             `;
@@ -274,7 +274,7 @@ function loadNewsData() {
                 <td><strong>${item.title}</strong><br><small style="color:#777; display:block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.summary || ''}</small></td>
                 <td>${item.date}</td>
                 <td>
-                    <button class="action-btn edit" onclick="editNews('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn edit" onclick="openNewsModal('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
                     <button class="action-btn" onclick="deleteNews('${key}')" title="Xóa"><i class="fas fa-trash-alt"></i></button>
                 </td>
             `;
