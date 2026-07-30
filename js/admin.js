@@ -164,12 +164,19 @@ function openPricingModal(id = null) {
         width: 600,
         html: `
             <div class="form-group">
-                <label>Nhóm Dịch Vụ</label>
-                <select id="p_group" class="swal2-select" style="margin:0; width:100%;">
-                    <option value="Dịch vụ Xử lý tại chỗ" ${item.group === 'Dịch vụ Xử lý tại chỗ' ? 'selected' : ''}>Dịch vụ Xử lý tại chỗ (Kích bình, thay lốp...)</option>
-                    <option value="Dịch vụ Cẩu kéo" ${item.group === 'Dịch vụ Cẩu kéo' ? 'selected' : ''}>Dịch vụ Cẩu kéo</option>
-                    <option value="Dịch vụ Khác" ${item.group === 'Dịch vụ Khác' ? 'selected' : ''}>Dịch vụ Khác</option>
-                </select>
+                <label>Nhóm Dịch Vụ (Nhập tay hoặc chọn)</label>
+                <input id="p_group" class="swal2-input" list="group_list" placeholder="VD: Dịch vụ Xử lý tại chỗ" value="${item.group.replace(/"/g, '&quot;')}" style="margin:0; width:100%;">
+                <datalist id="group_list">
+                    <option value="Dịch vụ Xử lý tại chỗ">
+                    <option value="Dịch vụ Cẩu kéo">
+                    <option value="Kéo xe">
+                    <option value="Kích bình">
+                    <option value="Thay lốp">
+                    <option value="Tiếp nhiên liệu">
+                    <option value="Sửa chữa lưu động">
+                    <option value="Cứu hộ xe tải">
+                    <option value="Dịch vụ Khác">
+                </datalist>
             </div>
             <div class="form-group">
                 <label>Loại Xe Cần Cứu Hộ</label>
