@@ -42,22 +42,67 @@ document.addEventListener('DOMContentLoaded', () => {
             const keys = Object.keys(data).sort((a,b) => (data[a].order || 0) - (data[b].order || 0));
             
             if(keys.length === 0) {
-                pricingList.innerHTML = '<div style="text-align: center; grid-column: 1 / -1;">Đang cập nhật bảng giá...</div>';
+                pricingList.innerHTML = '<div style="text-align: center; padding: 30px;">Đang cập nhật bảng giá...</div>';
                 return;
             }
             
+            // Group data by 'group' field
+            const groupedData = {};
             keys.forEach(key => {
                 const item = data[key];
-                const card = document.createElement('div');
-                card.style.cssText = 'background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f0f0f0; transition: transform 0.3s;';
-                card.innerHTML = `
-                    <h3 style="color: #333; font-size: 1.2rem; margin-bottom: 10px;">${item.service}</h3>
-                    <div style="color: #d32f2f; font-size: 1.5rem; font-weight: 800;">${item.price}</div>
-                `;
-                card.onmouseover = () => card.style.transform = 'translateY(-5px)';
-                card.onmouseout = () => card.style.transform = 'translateY(0)';
-                pricingList.appendChild(card);
+                const groupName = item.group || 'Dịch vụ Khác';
+                if (!groupedData[groupName]) groupedData[groupName] = [];
+                groupedData[groupName].push(item);
             });
+            
+            let tableHTML = `
+                <table class="pricing-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Loại xe cần cứu hộ</th>
+                            <th style="width: 20%;">Chi phí cứu hộ cơ bản<br><small>(Dưới 10Km)</small></th>
+                            <th style="width: 20%;">Cước phí vượt giới hạn<br><small>(Từ 11Km trở đi)</small></th>
+                            <th style="width: 15%;">Liên hệ</th>
+                            <th style="width: 25%;">Loại xe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (const [groupName, items] of Object.entries(groupedData)) {
+                // Group Header Row
+                tableHTML += `
+                    <tr class="group-row">
+                        <td colspan="5">${groupName}</td>
+                    </tr>
+                `;
+                
+                // Item Rows
+                items.forEach(item => {
+                    const detailsHTML = item.description 
+                        ? `<ul class="details-list">` + item.description.split('\\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('') + `</ul>`
+                        : '';
+                        
+                    tableHTML += `
+                        <tr>
+                            <td class="vehicle-name">${item.vehicle || '-'}</td>
+                            <td class="price-val" style="color: #d32f2f;">${item.basePrice || '-'}</td>
+                            <td class="price-val">${item.extraPrice || '-'}</td>
+                            <td style="text-align: center;">
+                                <a href="tel:0989123123" class="btn-call-now">Gọi ngay</a>
+                            </td>
+                            <td>${detailsHTML}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            pricingList.innerHTML = tableHTML;
         });
     }
 

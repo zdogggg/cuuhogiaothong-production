@@ -141,8 +141,10 @@ function loadPricingData() {
             const item = data[key];
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${item.service}</strong></td>
-                <td style="color: #d32f2f; font-weight: 600;">${item.price}</td>
+                <td><strong>${item.group || 'Chưa phân nhóm'}</strong></td>
+                <td>${item.vehicle || '-'}</td>
+                <td style="color: #d32f2f; font-weight: 600;">${item.basePrice || '-'}</td>
+                <td style="color: #f57c00; font-weight: 600;">${item.extraPrice || '-'}</td>
                 <td>
                     <button class="action-btn edit" onclick="editPricing('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
                     <button class="action-btn" onclick="deletePricing('${key}')" title="Xóa"><i class="fas fa-trash-alt"></i></button>
@@ -155,28 +157,40 @@ function loadPricingData() {
 
 function openPricingModal(id = null) {
     const isEdit = id !== null;
-    const item = isEdit ? currentPricingData[id] : { service: 'Kéo xe', price: '', order: 0 };
+    const item = isEdit ? currentPricingData[id] : { group: 'Dịch vụ Xử lý tại chỗ', vehicle: '', basePrice: '', extraPrice: '', description: '', order: 0 };
     
     Swal.fire({
         title: isEdit ? 'Sửa Giá Dịch Vụ' : 'Thêm Dịch Vụ Mới',
+        width: 600,
         html: `
             <div class="form-group">
-                <label>Tên Dịch Vụ</label>
-                <select id="p_service" class="swal2-select" style="margin:0; width:100%;">
-                    <option value="Kéo xe" ${item.service === 'Kéo xe' ? 'selected' : ''}>Kéo xe</option>
-                    <option value="Kích bình" ${item.service === 'Kích bình' ? 'selected' : ''}>Kích bình</option>
-                    <option value="Thay lốp" ${item.service === 'Thay lốp' ? 'selected' : ''}>Thay lốp</option>
-                    <option value="Tiếp nhiên liệu" ${item.service === 'Tiếp nhiên liệu' ? 'selected' : ''}>Tiếp nhiên liệu</option>
-                    <option value="Sửa chữa lưu động" ${item.service === 'Sửa chữa lưu động' ? 'selected' : ''}>Sửa chữa lưu động</option>
-                    <option value="Cứu hộ xe tải" ${item.service === 'Cứu hộ xe tải' ? 'selected' : ''}>Cứu hộ xe tải</option>
+                <label>Nhóm Dịch Vụ</label>
+                <select id="p_group" class="swal2-select" style="margin:0; width:100%;">
+                    <option value="Dịch vụ Xử lý tại chỗ" ${item.group === 'Dịch vụ Xử lý tại chỗ' ? 'selected' : ''}>Dịch vụ Xử lý tại chỗ (Kích bình, thay lốp...)</option>
+                    <option value="Dịch vụ Cẩu kéo" ${item.group === 'Dịch vụ Cẩu kéo' ? 'selected' : ''}>Dịch vụ Cẩu kéo</option>
+                    <option value="Dịch vụ Khác" ${item.group === 'Dịch vụ Khác' ? 'selected' : ''}>Dịch vụ Khác</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Mức Giá</label>
-                <input id="p_price" class="swal2-input" placeholder="Ví dụ: Từ 500.000đ" value="${item.price}" style="margin:0; width:100%;">
+                <label>Loại Xe Cần Cứu Hộ</label>
+                <input id="p_vehicle" class="swal2-input" placeholder="VD: Xe con / Xe tải" value="${item.vehicle}" style="margin:0; width:100%;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Chi Phí Cơ Bản</label>
+                    <input id="p_basePrice" class="swal2-input" placeholder="VD: 300.000 đến 500.000 VNĐ" value="${item.basePrice}" style="margin:0; width:100%;">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Cước Phí Vượt (km)</label>
+                    <input id="p_extraPrice" class="swal2-input" placeholder="VD: 35.000 VNĐ/km" value="${item.extraPrice}" style="margin:0; width:100%;">
+                </div>
             </div>
             <div class="form-group">
-                <label>Thứ tự hiển thị</label>
+                <label>Chi tiết loại xe (Xuống dòng cho mỗi ý)</label>
+                <textarea id="p_description" class="swal2-textarea" placeholder="VD: - Xe ô tô chở người từ 16 chỗ ngồi trở xuống" style="margin:0; width:100%; min-height: 80px;">${item.description}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Thứ tự hiển thị (Số nhỏ xếp trên)</label>
                 <input type="number" id="p_order" class="swal2-input" value="${item.order}" style="margin:0; width:100%;">
             </div>
         `,
@@ -185,15 +199,18 @@ function openPricingModal(id = null) {
         cancelButtonText: 'Hủy',
         preConfirm: () => {
             return {
-                service: document.getElementById('p_service').value,
-                price: document.getElementById('p_price').value,
+                group: document.getElementById('p_group').value,
+                vehicle: document.getElementById('p_vehicle').value,
+                basePrice: document.getElementById('p_basePrice').value,
+                extraPrice: document.getElementById('p_extraPrice').value,
+                description: document.getElementById('p_description').value,
                 order: parseInt(document.getElementById('p_order').value) || 0
             }
         }
     }).then((result) => {
         if (result.isConfirmed) {
             const dataToSave = result.value;
-            if(!dataToSave.service) return Swal.fire('Lỗi', 'Tên dịch vụ không được để trống', 'error');
+            if(!dataToSave.vehicle) return Swal.fire('Lỗi', 'Loại xe không được để trống', 'error');
             
             const refId = isEdit ? id : 'svc_' + Date.now();
             db.ref('pricing/' + refId).set(dataToSave).then(() => {
