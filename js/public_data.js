@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     tableHTML += `
                         <tr>
                             <td class="vehicle-name">${item.vehicle || '-'}</td>
-                            <td class="price-val" style="color: #d32f2f;">${item.basePrice || '-'}</td>
-                            <td class="price-val">${item.extraPrice || '-'}</td>
+                            <td class="price-val" style="color: #d32f2f;">${formatPriceDisplay(item.basePrice)}</td>
+                            <td class="price-val">${formatPriceDisplay(item.extraPrice)}</td>
                             <td style="text-align: center;">
                                 <a href="tel:0989123123" class="btn-call-now">Gọi ngay</a>
                             </td>
@@ -142,4 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+}
+
+function formatPriceDisplay(val) {
+    if (!val) return '-';
+    let str = val.toString().replace(/\d+/g, function(m) {
+        return parseInt(m).toLocaleString('vi-VN');
+    });
+    if (/\d/.test(str) && !/vn[dđ]/i.test(str) && !/đ/i.test(str)) {
+        str += ' VNĐ';
+    }
+    return str;
 });

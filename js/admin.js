@@ -143,8 +143,8 @@ function loadPricingData() {
             tr.innerHTML = `
                 <td><strong>${item.group || 'Chưa phân nhóm'}</strong></td>
                 <td>${item.vehicle || '-'}</td>
-                <td style="color: #d32f2f; font-weight: 600;">${item.basePrice || '-'}</td>
-                <td style="color: #f57c00; font-weight: 600;">${item.extraPrice || '-'}</td>
+                <td style="color: #d32f2f; font-weight: 600;">${formatPriceDisplay(item.basePrice)}</td>
+                <td style="color: #f57c00; font-weight: 600;">${formatPriceDisplay(item.extraPrice)}</td>
                 <td>
                     <button class="action-btn edit" onclick="openPricingModal('${key}')" title="Sửa"><i class="fas fa-edit"></i></button>
                     <button class="action-btn" onclick="deletePricing('${key}')" title="Xóa"><i class="fas fa-trash-alt"></i></button>
@@ -243,6 +243,17 @@ function deletePricing(id) {
             });
         }
     });
+}
+
+function formatPriceDisplay(val) {
+    if (!val) return '-';
+    let str = val.toString().replace(/\d+/g, function(m) {
+        return parseInt(m).toLocaleString('vi-VN');
+    });
+    if (/\d/.test(str) && !/vn[dđ]/i.test(str) && !/đ/i.test(str)) {
+        str += ' VNĐ';
+    }
+    return str;
 }
 
 // --- NEWS CRUD ---
