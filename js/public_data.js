@@ -18,6 +18,20 @@ if (!firebase.apps.length) {
 const publicDb = firebase.database();
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Load General Settings (Logo & Banner)
+    publicDb.ref('settings').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const mainLogo = document.getElementById('mainLogoImg');
+            const footerLogo = document.getElementById('footerLogoImg');
+            const heroBanner = document.getElementById('heroBannerImg');
+            
+            if (mainLogo && data.logoUrl) mainLogo.src = data.logoUrl;
+            if (footerLogo && data.footerLogoUrl) footerLogo.src = data.footerLogoUrl;
+            if (heroBanner && data.bannerUrl) heroBanner.src = data.bannerUrl;
+        }
+    });
+
     // 1. Load Pricing
     const pricingList = document.getElementById('publicPricingList');
     if(pricingList) {

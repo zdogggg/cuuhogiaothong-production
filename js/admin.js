@@ -12,6 +12,7 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const storage = firebase.storage();
 
 // --- LOGIN LOGIC ---
 const ADMIN_PASS = "admin123";
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginOverlay').style.display = 'none';
         loadPricingData();
         loadNewsData();
+        loadSettingsData();
     }
 });
 
@@ -35,6 +37,7 @@ function checkLogin() {
         });
         loadPricingData();
         loadNewsData();
+        loadSettingsData();
     } else {
         Swal.fire('Lỗi', 'Mật khẩu không chính xác!', 'error');
     }
@@ -53,10 +56,67 @@ function switchTab(tabId) {
     if(tabId === 'pricing') {
         document.getElementById('btnTabPricing').classList.add('active');
         document.getElementById('pricingPanel').classList.add('active');
-    } else {
+    } else if(tabId === 'news') {
         document.getElementById('btnTabNews').classList.add('active');
         document.getElementById('newsPanel').classList.add('active');
+    } else if(tabId === 'settings') {
+        document.getElementById('btnTabSettings').classList.add('active');
+        document.getElementById('settingsPanel').classList.add('active');
     }
+}
+
+// --- FILE UPLOAD LOGIC ---
+function uploadFile(inputId, urlInputId, previewId) {
+    const fileInput = document.getElementById(inputId);
+    const file = fileInput.files[0];
+    if (!file) return Swal.fire('Lỗi', 'Vui lòng chọn 1 file ảnh trước', 'error');
+
+    Swal.fire({ title: 'Đang tải lên...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+    const storageRef = storage.ref('uploads/' + Date.now() + '_' + file.name);
+    storageRef.put(file).then(snapshot => {
+        return snapshot.ref.getDownloadURL();
+    }).then(url => {
+        document.getElementById(urlInputId).value = url;
+        if(previewId && document.getElementById(previewId)) document.getElementById(previewId).src = url;
+        Swal.close();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Tải ảnh thành công', showConfirmButton: false, timer: 1500 });
+    }).catch(error => {
+        Swal.close();
+        Swal.fire('Lỗi', 'Tải ảnh thất bại. Hãy chắc chắn Firebase Storage đã được cấp quyền (Rules: allow read, write: if true).', 'error');
+        console.error(error);
+    });
+}
+
+// --- SETTINGS CRUD ---
+function loadSettingsData() {
+    db.ref('settings').on('value', snapshot => {
+        const data = snapshot.val() || {};
+        
+        if (data.logoUrl) {
+            document.getElementById('setMainLogoUrl').value = data.logoUrl;
+            document.getElementById('previewMainLogo').src = data.logoUrl;
+        }
+        if (data.footerLogoUrl) {
+            document.getElementById('setFooterLogoUrl').value = data.footerLogoUrl;
+            document.getElementById('previewFooterLogo').src = data.footerLogoUrl;
+        }
+        if (data.bannerUrl) {
+            document.getElementById('setBannerUrl').value = data.bannerUrl;
+            document.getElementById('previewBanner').src = data.bannerUrl;
+        }
+    });
+}
+
+function saveSettings() {
+    const data = {
+        logoUrl: document.getElementById('setMainLogoUrl').value,
+        footerLogoUrl: document.getElementById('setFooterLogoUrl').value,
+        bannerUrl: document.getElementById('setBannerUrl').value
+    };
+    db.ref('settings').set(data).then(() => {
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã lưu cấu hình', showConfirmButton: false, timer: 1500 });
+    });
 }
 
 // --- PRICING CRUD ---
@@ -95,14 +155,21 @@ function loadPricingData() {
 
 function openPricingModal(id = null) {
     const isEdit = id !== null;
-    const item = isEdit ? currentPricingData[id] : { service: '', price: '', order: 0 };
+    const item = isEdit ? currentPricingData[id] : { service: 'Kéo xe', price: '', order: 0 };
     
     Swal.fire({
         title: isEdit ? 'Sửa Giá Dịch Vụ' : 'Thêm Dịch Vụ Mới',
         html: `
             <div class="form-group">
                 <label>Tên Dịch Vụ</label>
-                <input id="p_service" class="swal2-input" placeholder="Ví dụ: Kéo xe ô tô 4 chỗ" value="${item.service}" style="margin:0; width:100%;">
+                <select id="p_service" class="swal2-select" style="margin:0; width:100%;">
+                    <option value="Kéo xe" ${item.service === 'Kéo xe' ? 'selected' : ''}>Kéo xe</option>
+                    <option value="Kích bình" ${item.service === 'Kích bình' ? 'selected' : ''}>Kích bình</option>
+                    <option value="Thay lốp" ${item.service === 'Thay lốp' ? 'selected' : ''}>Thay lốp</option>
+                    <option value="Tiếp nhiên liệu" ${item.service === 'Tiếp nhiên liệu' ? 'selected' : ''}>Tiếp nhiên liệu</option>
+                    <option value="Sửa chữa lưu động" ${item.service === 'Sửa chữa lưu động' ? 'selected' : ''}>Sửa chữa lưu động</option>
+                    <option value="Cứu hộ xe tải" ${item.service === 'Cứu hộ xe tải' ? 'selected' : ''}>Cứu hộ xe tải</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Mức Giá</label>
@@ -213,8 +280,12 @@ function openNewsModal(id = null) {
                 <input id="n_date" class="swal2-input" value="${item.date}" style="margin:0; width:100%;">
             </div>
             <div class="form-group">
-                <label>Link Ảnh Bìa (URL - có thể copy link ảnh trên mạng)</label>
-                <input id="n_img" class="swal2-input" placeholder="https://..." value="${item.image_url}" style="margin:0; width:100%;">
+                <label>Ảnh Bìa Tin Tức</label>
+                <div class="upload-wrapper" style="margin-top: 5px;">
+                    <input type="text" id="n_img" class="swal2-input" placeholder="Link ảnh hoặc tải lên" value="${item.image_url}" style="margin:0; flex:2;">
+                    <input type="file" id="fileNewsImg" accept="image/*" style="flex:1; padding: 12px; margin-left: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <button type="button" class="btn" onclick="uploadFile('fileNewsImg', 'n_img', null)" style="margin-left: 10px;"><i class="fas fa-upload"></i></button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Nội dung tóm tắt / Chi tiết</label>
