@@ -203,6 +203,7 @@ btnStop.addEventListener('click', () => {
         text: "Bạn đã tới nơi và muốn tắt định vị?",
         icon: 'question',
         showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
         confirmButtonText: 'Đúng, tắt định vị',
         cancelButtonText: 'Hủy'
     }).then((result) => {
