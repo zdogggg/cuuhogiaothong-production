@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td class="price-val" style="color: #d32f2f;">${formatPriceDisplay(item.basePrice)}</td>
                             <td class="price-val">${formatPriceDisplay(item.extraPrice)}</td>
                             <td style="text-align: center;">
-                                <a href="tel:0989123123" class="btn-call-now">Gọi ngay</a>
+                                <a href="tel:0979032589" class="btn-call-now">Gọi ngay</a>
                             </td>
                             <td>${detailsHTML}</td>
                         </tr>
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size: 0.85rem; color: #888; margin-bottom: 8px; display: block;"><i class="far fa-calendar-alt"></i> ${item.date}</span>
                         <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 10px; line-height: 1.4;">${item.title}</h3>
                         <p style="font-size: 0.95rem; color: #666; line-height: 1.6; margin-bottom: 15px;">${item.summary ? item.summary.replace(/\\n/g, '<br>') : ''}</p>
-                        <a href="tel:0989123123" style="color: #d32f2f; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">Gọi ngay <i class="fas fa-arrow-right"></i></a>
+                        <a href="tel:0979032589" style="color: #d32f2f; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">Gọi ngay <i class="fas fa-arrow-right"></i></a>
                     </div>
                 `;
                 card.onmouseover = () => card.style.transform = 'translateY(-5px)';
