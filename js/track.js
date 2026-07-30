@@ -74,7 +74,7 @@ if (!bookingId) {
                 document.getElementById('statusDesc').innerText = 'Xe cứu hộ đã đến vị trí của bạn thành công.';
                 document.getElementById('distanceText').innerText = 'Hoàn thành';
                 
-                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('progressFill').style.width = 'calc(100% - 30px)';
                 document.getElementById('progressFill').style.background = '#43a047';
                 document.getElementById('step1').className = 'step done';
                 document.getElementById('step2').className = 'step done';
@@ -84,7 +84,7 @@ if (!bookingId) {
                 document.getElementById('statusTitle').style.color = '#2e7d32'; // Xanh lá
                 document.getElementById('statusDesc').innerText = 'Tài xế đang di chuyển đến vị trí của bạn.';
                 
-                document.getElementById('progressFill').style.width = '50%';
+                document.getElementById('progressFill').style.width = 'calc(50% - 15px)';
                 document.getElementById('progressFill').style.background = '#ffb300';
                 document.getElementById('step1').className = 'step done';
                 document.getElementById('step2').className = 'step active';
