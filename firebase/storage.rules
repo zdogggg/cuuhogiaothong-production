@@ -1,0 +1,13 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Ảnh logo/banner đã tải lên trước đây: chỉ cho xem, không ai được tải lên/xoá nữa.
+    match /uploads/{file} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

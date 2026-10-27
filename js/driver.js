@@ -44,10 +44,12 @@ let driverMarker = null;
 let routingControl = null;
 let isFirstLocation = true;
 
-// Lấy mã bookingId và tọa độ khách hàng từ URL
-const customerLat = urlParams.get('lat');
-const customerLng = urlParams.get('lng');
-const customerPhone = urlParams.get('phone');
+// Thông tin khách nằm sau dấu # (không gửi lên máy chủ web); vẫn đọc ?lat=... cho link cũ
+const hashParams = new URLSearchParams(window.location.hash.slice(1));
+const customerLat = hashParams.get('lat') || urlParams.get('lat');
+const customerLng = hashParams.get('lng') || urlParams.get('lng');
+const rawPhone = hashParams.get('phone') || urlParams.get('phone') || '';
+const customerPhone = /^\+?\d{9,12}$/.test(rawPhone) ? rawPhone : null;
 
 // Icon Khách hàng
 const customerIcon = L.divIcon({

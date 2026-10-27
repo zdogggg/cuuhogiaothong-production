@@ -32,6 +32,6 @@ docker-compose up -d
 Sau đó truy cập trang web thông qua cổng mặc định được cấu hình (thường là port 80).
 
 ## Thông tin Liên hệ
-- **Hotline**: 0989 123 123
-- **Zalo**: 0989 123 123
+- **Hotline**: 0979 032 589
+- **Zalo**: 0979 032 589
 - **Địa chỉ**: Km92 ngõ An Trì, Hồng Bàng, Hải Phòng, Việt Nam

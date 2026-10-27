@@ -34,11 +34,20 @@ let driverMarker = null;
 let routingControl = null;
 let isFirstLocation = true;
 
-// Lấy mã bookingId và tọa độ khách hàng từ URL (?id=CH123456&lat=...&lng=...)
+// Lấy mã cuốc từ URL (?id=CH...); tọa độ khách được lưu trên máy khách lúc gửi form, không nằm trên URL
 const urlParams = new URLSearchParams(window.location.search);
 const bookingId = urlParams.get('id');
-const customerLat = urlParams.get('lat');
-const customerLng = urlParams.get('lng');
+let customerLat = null;
+let customerLng = null;
+try {
+    const saved = JSON.parse(localStorage.getItem('booking_' + bookingId) || 'null');
+    if (saved) {
+        customerLat = saved.lat;
+        customerLng = saved.lng;
+    }
+} catch (e) {
+    // Không đọc được localStorage thì chỉ hiện vị trí xe, không vẽ đường
+}
 
 // Icon Khách hàng
 const customerIcon = L.divIcon({

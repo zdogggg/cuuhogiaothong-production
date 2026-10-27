@@ -1,3 +1,7 @@
+// Địa chỉ Cloudflare Worker nhận form (xem worker/README.md). Token Telegram nằm ở Worker, không ở đây.
+const RESCUE_API_URL = '';
+const HOTLINE = '0979032589';
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- QUICK RESCUE FORM LOGIC ---
     const btnGetLocation = document.getElementById('btnGetLocation');
@@ -5,23 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const rescueForm = document.getElementById('rescueForm');
     const btnSubmitRescue = document.getElementById('btnSubmitRescue');
 
-    let mapLink = '';
     let customerLat = null;
     let customerLng = null;
+
+    function notify(title, text, icon) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire(title, text, icon);
+        } else {
+            alert(text);
+        }
+    }
 
     if (btnGetLocation && locationInput) {
         btnGetLocation.addEventListener('click', () => {
             if (navigator.geolocation) {
                 const icon = btnGetLocation.querySelector('i');
                 icon.className = 'fas fa-spinner fa-spin';
-                
+
                 navigator.geolocation.getCurrentPosition((position) => {
                     customerLat = position.coords.latitude;
                     customerLng = position.coords.longitude;
-                    mapLink = `https://maps.google.com/?q=${customerLat},${customerLng}`;
                     locationInput.value = `Đã lấy vị trí (Lat: ${customerLat.toFixed(4)}, Lng: ${customerLng.toFixed(4)})`;
                     icon.className = 'fas fa-map-marker-alt';
-                    
+
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             toast: true,
@@ -32,24 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             timer: 2000
                         });
                     }
-                }, (error) => {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi lấy vị trí',
-                            text: 'Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.'
-                        });
-                    } else {
-                        alert('Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.');
-                    }
+                }, () => {
+                    notify('Lỗi lấy vị trí', 'Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.', 'error');
                     icon.className = 'fas fa-map-marker-alt';
                 });
             } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Lỗi', 'Trình duyệt của bạn không hỗ trợ định vị.', 'error');
-                } else {
-                    alert('Trình duyệt của bạn không hỗ trợ định vị.');
-                }
+                notify('Lỗi', 'Trình duyệt của bạn không hỗ trợ định vị.', 'error');
             }
         });
     }
@@ -57,54 +55,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rescueForm) {
         rescueForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const phone = document.getElementById('rescuePhone').value;
-            const location = locationInput.value;
+
+            const phone = document.getElementById('rescuePhone').value.replace(/[\s.\-()]/g, '');
+            const location = locationInput.value.trim();
             const service = document.getElementById('rescueService').value;
-            
-            
+            const honeypot = document.getElementById('rescueWebsite');
+
             // Validate input
             if (!phone || !location || !service) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Thiếu thông tin', 'Vui lòng điền đầy đủ thông tin!', 'warning');
-                } else {
-                    alert('Vui lòng điền đầy đủ thông tin!');
-                }
+                notify('Thiếu thông tin', 'Vui lòng điền đầy đủ thông tin!', 'warning');
                 return;
             }
 
             // Validate phone format (Vietnamese)
-            const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-            if (!phoneRegex.test(phone)) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Sai định dạng', 'Vui lòng nhập đúng số điện thoại di động (10 số)!', 'error');
-                } else {
-                    alert('Vui lòng nhập đúng số điện thoại di động (10 số)!');
-                }
+            if (!/^(0|\+?84)[35789]\d{8}$/.test(phone)) {
+                notify('Sai định dạng', 'Vui lòng nhập đúng số điện thoại di động (10 số)!', 'error');
                 return;
             }
 
-            // Anti-Spam Rate Limiting (15 seconds)
+            // Chặn bấm gửi liên tục trên cùng máy (máy chủ cũng giới hạn riêng theo IP)
             const lastSentTime = localStorage.getItem('lastRescueSentTime');
             if (lastSentTime) {
                 const timeDiff = (Date.now() - parseInt(lastSentTime)) / 1000;
                 if (timeDiff < 15) {
                     const timeLeft = Math.ceil(15 - timeDiff);
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Vui lòng đợi', `Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau ${timeLeft} giây.`, 'warning');
-                    } else {
-                        alert(`Vui lòng đợi ${timeLeft} giây trước khi gửi yêu cầu tiếp theo.`);
-                    }
+                    notify('Vui lòng đợi', `Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau ${timeLeft} giây.`, 'warning');
                     return;
                 }
             }
 
-            // TODO: Thay thế bằng Token và Chat ID thật của bạn
-            const TELEGRAM_BOT_TOKEN = '8801278671:AAEa3voVbtSHOXagGIlIXHNxdvbSAHsRdqg';
-            const TELEGRAM_CHAT_ID = '5655272363';
-            
-            if (TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN') {
-                alert('Tính năng gửi Telegram chưa được cấu hình (Chưa có Token).');
+            if (!RESCUE_API_URL) {
+                notify('Chưa sẵn sàng', `Form đang bảo trì. Vui lòng gọi hotline ${HOTLINE} để được hỗ trợ ngay.`, 'info');
                 return;
             }
 
@@ -112,91 +93,54 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSubmitRescue.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG GỬI...';
             btnSubmitRescue.disabled = true;
 
-            const finalLocation = mapLink ? `${location}\n📍 Bản đồ: ${mapLink}` : location;
-            
-            const now = new Date();
-            const timeString = now.toLocaleString('vi-VN');
-            
-            // Tạo mã cuốc ngẫu nhiên (ví dụ: CH123456)
-            const bookingId = 'CH' + Math.floor(100000 + Math.random() * 900000);
-            
-            // Tự động lấy tên miền hiện tại (chạy được cả ở localhost, github pages hay domain thật)
-            let baseUrl = window.location.origin + window.location.pathname.replace(/\/?(index\.html)?$/, '');
-            if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                baseUrl = 'https://zdogggg.github.io/cuuhogiaothong-production'; // Fallback khi test ở máy tính cá nhân
-            }
-            
-            let locationParams = `&phone=${encodeURIComponent(phone)}`;
-            if (customerLat && customerLng) {
-                locationParams = `&lat=${customerLat}&lng=${customerLng}&phone=${encodeURIComponent(phone)}`;
-            }
-            
-            const driverLink = `${baseUrl}/driver.html?id=${bookingId}${locationParams}`;
-
-            const message = `🚨 **YÊU CẦU CỨU HỘ MỚI** 🚨\n\n`
-                          + `🔖 Mã cuốc: ${bookingId}\n`
-                          + `⏰ Thời gian: ${timeString}\n`
-                          + `📞 SĐT Khách: ${phone}\n`
-                          + `🛠 Dịch vụ: ${service}\n`
-                          + `📍 Vị trí: ${finalLocation}\n\n`
-                          + `👉 [BẤM VÀO ĐÂY ĐỂ NHẬN CUỐC](${driverLink})`;
-
-            const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-
             try {
-                const response = await fetch(telegramUrl, {
+                const response = await fetch(RESCUE_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
+                        phone,
+                        service,
+                        location,
+                        lat: customerLat,
+                        lng: customerLng,
+                        website: honeypot ? honeypot.value : ''
                     })
                 });
 
                 const data = await response.json();
-                
+
                 if (data.ok) {
                     localStorage.setItem('lastRescueSentTime', Date.now().toString());
-                    
+
+                    // Tọa độ khách lưu trên máy khách để trang theo dõi vẽ đường, không đưa lên URL.
+                    if (customerLat && customerLng) {
+                        localStorage.setItem('booking_' + data.bookingId, JSON.stringify({ lat: customerLat, lng: customerLng }));
+                    }
+                    const trackUrl = `track.html?id=${encodeURIComponent(data.bookingId)}`;
+
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
-                            title: 'Gửi thành công!',
-                            text: 'Đội cứu hộ đã nhận được yêu cầu. Hệ thống đang chuyển sang màn hình theo dõi...',
+                            title: 'Đã nhận yêu cầu!',
+                            text: `Đội cứu hộ sẽ gọi lại cho bạn trong ít phút. Cần gấp hơn, hãy gọi ${HOTLINE}.`,
                             icon: 'success',
                             showConfirmButton: false,
-                            timer: 2000
+                            timer: 2500
                         }).then(() => {
-                            const trackUrl = `track.html?id=${bookingId}${locationParams}`;
-                            const newTab = window.open(trackUrl, '_blank');
-                            if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-                                // Bị chặn popup, đành nhảy đè trang hiện tại
-                                window.location.href = trackUrl;
-                            }
+                            window.location.href = trackUrl;
                         });
                     } else {
-                        alert('Gửi yêu cầu thành công! Đang chuyển sang màn hình theo dõi...');
-                        const trackUrl = `track.html?id=${bookingId}${locationParams}`;
-                        const newTab = window.open(trackUrl, '_blank');
-                        if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-                            window.location.href = trackUrl;
-                        }
+                        alert(`Đã nhận yêu cầu! Đội cứu hộ sẽ gọi lại cho bạn trong ít phút. Cần gấp hơn, hãy gọi ${HOTLINE}.`);
+                        window.location.href = trackUrl;
                     }
+                } else if (data.error === 'rate_limited') {
+                    notify('Vui lòng đợi', `Bạn gửi quá nhanh. Vui lòng thử lại sau 1 phút hoặc gọi ${HOTLINE}.`, 'warning');
                 } else {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Lỗi', 'Có lỗi xảy ra khi gửi yêu cầu: ' + data.description, 'error');
-                    } else {
-                        alert('Có lỗi xảy ra khi gửi yêu cầu qua Telegram: ' + data.description);
-                    }
+                    notify('Chưa gửi được', `Có lỗi khi gửi yêu cầu. Vui lòng gọi ngay ${HOTLINE}.`, 'error');
                 }
             } catch (error) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Lỗi kết nối', 'Không thể kết nối đến máy chủ. Vui lòng thử lại.', 'error');
-                } else {
-                    alert('Lỗi kết nối. Không thể gửi yêu cầu lúc này.');
-                }
+                notify('Lỗi kết nối', `Không thể gửi yêu cầu lúc này. Vui lòng gọi ngay ${HOTLINE}.`, 'error');
                 console.error(error);
             } finally {
                 btnSubmitRescue.innerHTML = originalBtnText;

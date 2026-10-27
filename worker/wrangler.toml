@@ -1,0 +1,17 @@
+name = "cuuho-rescue-form"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Sửa 2 dòng này khi có tên miền riêng
+SITE_URL = "https://zdogggg.github.io/cuuhogiaothong-production"
+ALLOWED_ORIGINS = "https://zdogggg.github.io,http://localhost:8082,http://127.0.0.1:8082"
+
+# Tối đa 3 lần gửi / 60 giây / IP
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 3
+  period = 60
