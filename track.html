@@ -3,7 +3,7 @@
 <head>
     <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theo Dõi Xe Cứu Hộ</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -170,8 +170,9 @@
 
     <div class="status-panel">
         <div id="loader" class="pulse-loader"></div>
-        <div id="statusTitle" class="status-title">Đang tìm xe cứu hộ...</div>
-        <div id="statusDesc" class="status-desc">Hệ thống đang kết nối với tài xế gần nhất. Vui lòng giữ máy.</div>
+        <div id="statusTitle" class="status-title">Đã nhận yêu cầu của bạn</div>
+        <div id="statusDesc" class="status-desc">Nhân viên sẽ gọi lại cho bạn trong ít phút. Khi xe xuất phát, vị trí xe sẽ hiện trên bản đồ.<br>
+            Cần gấp? <a href="tel:0979032589" style="color: #d32f2f; font-weight: 700;">Gọi 0979 032 589</a></div>
         
         <div id="progressBlock" style="display: none; padding: 0 10px;">
             <div class="progress-container">
@@ -195,7 +196,7 @@
                 <strong>Xe Cứu Hộ Đang Tới</strong>
                 <span id="distanceText">Khoảng cách: Đang tính toán...</span>
             </div>
-            <a href="tel:19009999" style="background: linear-gradient(135deg, #43a047, #2e7d32); color: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4); transition: transform 0.2s;"><i class="fas fa-phone-alt" style="font-size: 1.1rem;"></i></a>
+            <a href="tel:0979032589" aria-label="Gọi tổng đài cứu hộ" style="background: linear-gradient(135deg, #43a047, #2e7d32); color: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4); transition: transform 0.2s;"><i class="fas fa-phone-alt" style="font-size: 1.1rem;"></i></a>
         </div>
     </div>
 
@@ -206,6 +207,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <!-- App Logic -->
-    <script src="js/track.js"></script>
+    <script src="js/track.js?v=5"></script>
 </body>
 </html>

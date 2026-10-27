@@ -16,11 +16,41 @@ if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
     db = firebase.database();
 }
 
-// Khởi tạo bản đồ Leaflet (Mặc định ở Hà Nội)
-const map = L.map('map').setView([21.0285, 105.8542], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+// Khởi tạo bản đồ Leaflet (mặc định ở trung tâm Hải Phòng)
+// Dùng tile OpenStreetMap France vì một số nhà mạng Việt Nam chặn tile.openstreetmap.org
+const map = L.map('map').setView([20.8449, 106.6881], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors, tiles HOT / OpenStreetMap France',
+    subdomains: 'abc',
+    maxZoom: 19
 }).addTo(map);
+
+let latestStatus = null;
+let lastDriverPos = null;
+let straightLine = null;
+
+// Khoảng cách đường thẳng (km) — dùng khi không tính được đường đi
+function haversineKm(a, b) {
+    const R = 6371;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(b[0] - a[0]);
+    const dLng = toRad(b[1] - a[1]);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+function showStraightLine() {
+    if (!lastDriverPos || !customerLat || !customerLng) return;
+    const target = [Number(customerLat), Number(customerLng)];
+    if (!straightLine) {
+        straightLine = L.polyline([lastDriverPos, target], {color: '#d32f2f', opacity: 0.6, weight: 4, dashArray: '6, 8'}).addTo(map);
+    } else {
+        straightLine.setLatLngs([lastDriverPos, target]);
+    }
+    if (latestStatus !== 'arrived') {
+        document.getElementById('distanceText').innerText = `Cách bạn khoảng ${haversineKm(lastDriverPos, target).toFixed(1)} km (đường thẳng)`;
+    }
+}
 
 // Icon Xe Cứu Hộ (Dùng Emoji để chống lỗi không load được ảnh do bản quyền)
 const towTruckIcon = L.divIcon({
@@ -102,7 +132,9 @@ if (!bookingId) {
             document.getElementById('driverInfo').style.display = 'flex';
             
             const newPos = [data.lat, data.lng];
-            
+            latestStatus = data.status;
+            lastDriverPos = newPos;
+
             // Vẽ/Cập nhật Marker trên bản đồ
             if (!driverMarker) {
                 driverMarker = L.marker(newPos, {icon: towTruckIcon}).addTo(map);
@@ -127,12 +159,19 @@ if (!bookingId) {
                         }
                     }).addTo(map);
                     
+                    // Không gọi được máy chủ tính đường thì vẽ đường thẳng + khoảng cách ước lượng
+                    routingControl.on('routingerror', showStraightLine);
+
                     // Cập nhật text khoảng cách và ETA
                     routingControl.on('routesfound', function(e) {
+                        if (straightLine) {
+                            map.removeLayer(straightLine);
+                            straightLine = null;
+                        }
                         const routes = e.routes;
                         const distance = routes[0].summary.totalDistance; // mét
                         const time = routes[0].summary.totalTime; // giây
-                        if (data.status !== 'arrived') {
+                        if (latestStatus !== 'arrived') {
                             const minutes = Math.ceil(time / 60);
                             document.getElementById('distanceText').innerHTML = `Khoảng cách: ${(distance/1000).toFixed(1)} km<br><span style="color:#d32f2f; font-weight:700;">Dự kiến: ${minutes} phút</span>`;
                         }

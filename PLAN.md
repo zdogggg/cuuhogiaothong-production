@@ -16,15 +16,15 @@
 | Zalo | 0979 032 589 | ☐ |
 | Tên doanh nghiệp hiển thị | Cứu Hộ Giao Thông 123 | ☐ |
 | Địa chỉ (nếu công khai) | Km92 ngõ An Trì, Hồng Bàng, Hải Phòng | ☐ |
-| Có trực 24/7 thật không? | NEED_CONFIRMATION | ☐ |
-| Thời gian đến nơi trung bình (nếu muốn ghi) | NEED_CONFIRMATION | ☐ |
-| Khu vực phục vụ thực tế | NEED_CONFIRMATION | ☐ |
+| Có trực 24/7 thật không? | Có | ☑ |
+| Thời gian đến nơi trung bình (nếu muốn ghi) | Không cam kết số phút | ☑ |
+| Khu vực phục vụ thực tế | Hải Phòng + lân cận (Quảng Ninh, Thái Bình) | ☑ |
 | Dịch vụ thực sự làm | Kéo xe, kích bình, thay lốp, tiếp nhiên liệu, sửa chữa lưu động, cứu hộ xe tải | ☐ |
 | Tên miền muốn dùng | NEED_CONFIRMATION | ☐ |
 | Tài xế có đang dùng trang `driver.html` / `track.html` không? | NEED_CONFIRMATION | ☐ |
-| Đánh giá khách hàng trên trang có phải khách thật không? | NEED_CONFIRMATION | ☐ |
+| Đánh giá khách hàng trên trang có phải khách thật không? | Không — đã bỏ | ☑ |
 
-**Quy tắc:** chưa xác nhận thì không ghi lên web. Hotline phải giống hệt nhau ở web, Google Maps, Zalo, Facebook (hiện README còn ghi `0989 123 123` → sửa).
+**Quy tắc:** chưa xác nhận thì không ghi lên web. Hotline phải giống hệt nhau ở web, Google Maps, Zalo, Facebook.
 
 ---
 
@@ -33,11 +33,11 @@
 Repo GitHub đang public nên mấy thứ dưới đây ai cũng đọc được.
 
 - [ ] **Thu hồi token Telegram cũ** trong @BotFather (`/revoke`), tạo token mới. *(Chủ bot tự làm.)*
-- [ ] Không để token trong code trình duyệt nữa → chuyển việc gửi Telegram sang **1 hàm serverless nhỏ** (Cloudflare Worker, miễn phí). Web chỉ gọi tới Worker; Worker giữ token và chặn spam.
-- [ ] **Bỏ trang admin** (`admin.html`, `js/admin.js`) — mật khẩu `admin123` đang nằm trong code. Giá/tin tức sửa thẳng trong HTML (xem Giai đoạn 3).
-- [ ] **Khoá Firebase Rules**: không để `read, write: if true`. Nếu còn dùng tracking thì chỉ cho ghi đúng nhánh `trackings/`; nếu bỏ tracking thì tắt hẳn Firebase.
-- [ ] Không đưa số điện thoại khách và toạ độ lên URL (`track.html?phone=...&lat=...`). Dùng mã cuốc là đủ.
-- [ ] Sửa README đúng hotline.
+- [x] Không để token trong code trình duyệt nữa → chuyển việc gửi Telegram sang **1 hàm serverless nhỏ** (Cloudflare Worker, miễn phí). Web chỉ gọi tới Worker; Worker giữ token và chặn spam.
+- [x] **Bỏ trang admin** (`admin.html`, `js/admin.js`) — mật khẩu `admin123` đang nằm trong code. Giá/tin tức sửa thẳng trong HTML (xem Giai đoạn 3).
+- [ ] **Khoá Firebase Rules**: không để `read, write: if true`. Nếu còn dùng tracking thì chỉ cho ghi đúng nhánh `trackings/`; nếu bỏ tracking thì tắt hẳn Firebase. *(Đã viết sẵn ở `firebase/` — chờ dán lên console.)*
+- [x] Không đưa số điện thoại khách và toạ độ lên URL (`track.html?phone=...&lat=...`). Dùng mã cuốc là đủ.
+- [x] Sửa README đúng hotline.
 
 **Xong khi:** trong repo không còn token, mật khẩu; Firebase không ghi tự do được.
 
@@ -66,33 +66,33 @@ Phần lớn khách cứu hộ gọi thẳng từ Google Maps khi tìm "cứu h�
 ## Giai đoạn 3 — Làm lại trang chủ cho nhanh & chuẩn SEO
 
 ### 3.1. Tốc độ (khách đang đứng giữa đường dùng 4G)
-- [ ] Nén ảnh: `logo.png` (1.7MB), `logovang.png` (1.8MB), `bannerngang.png` (2.7MB) → WebP, mục tiêu < 200KB mỗi ảnh. Ảnh gallery cũng chuyển WebP.
-- [ ] Thêm `width`/`height` cho ảnh; `loading="lazy"` cho ảnh phía dưới (không lazy ảnh banner đầu trang).
+- [x] Nén ảnh: `logo.png` (1.7MB), `logovang.png` (1.8MB), `bannerngang.png` (2.7MB) → WebP, mục tiêu < 200KB mỗi ảnh. Ảnh gallery cũng chuyển WebP.
+- [x] Thêm `width`/`height` cho ảnh; `loading="lazy"` cho ảnh phía dưới (không lazy ảnh banner đầu trang).
 - [ ] Bỏ thư viện không cần: Firebase (nếu bỏ tracking), SweetAlert (thay bằng thông báo đơn giản).
 - [ ] Mục tiêu: PageSpeed Insights mobile ≥ 85.
 
 ### 3.2. Nội dung có trong HTML (để Google đọc được)
-- [ ] Bảng giá và tin tức đang tải từ Firebase sau khi mở trang → **ghi thẳng vào HTML**. Đổi giá thì sửa file và deploy lại (vài phút).
-- [ ] Bỏ phần "Tin tức" nếu không có ai viết đều; thay bằng 3–5 bài hướng dẫn cố định (Giai đoạn 4).
+- [x] Bảng giá và tin tức đang tải từ Firebase sau khi mở trang → **ghi thẳng vào HTML**. Đổi giá thì sửa file và deploy lại (vài phút).
+- [x] Bỏ phần "Tin tức" nếu không có ai viết đều; thay bằng 3–5 bài hướng dẫn cố định (Giai đoạn 4).
 
 ### 3.3. SEO cơ bản trên trang
-- [ ] `<title>`: `Cứu Hộ Ô Tô Hải Phòng – Gọi 0979 032 589 | Cứu Hộ Giao Thông 123` (bỏ chữ "Vàng Đỏ").
-- [ ] Meta description viết cho người đọc: dịch vụ gì, ở đâu, gọi số nào.
-- [ ] Một `<h1>` duy nhất, có "cứu hộ ô tô Hải Phòng" một cách tự nhiên.
-- [ ] Sửa toàn bộ `href="#"` (khoảng 15 chỗ) thành link thật hoặc bỏ.
-- [ ] Alt text cho ảnh mô tả đúng ảnh.
-- [ ] Thêm JSON-LD `LocalBusiness` (tên, số, khu vực, giờ — khớp Google Business Profile). **Không thêm rating giả.**
-- [ ] Thêm `robots.txt`, `sitemap.xml`, favicon, thẻ Open Graph (để share Zalo/Facebook có ảnh đẹp).
+- [x] `<title>`: `Cứu Hộ Ô Tô Hải Phòng – Gọi 0979 032 589 | Cứu Hộ Giao Thông 123` (bỏ chữ "Vàng Đỏ").
+- [x] Meta description viết cho người đọc: dịch vụ gì, ở đâu, gọi số nào.
+- [x] Một `<h1>` duy nhất, có "cứu hộ ô tô Hải Phòng" một cách tự nhiên.
+- [x] Sửa toàn bộ `href="#"` (khoảng 15 chỗ) thành link thật hoặc bỏ.
+- [x] Alt text cho ảnh mô tả đúng ảnh.
+- [x] Thêm JSON-LD `LocalBusiness` (tên, số, khu vực, giờ — khớp Google Business Profile). **Không thêm rating giả.**
+- [x] Thêm `robots.txt`, `sitemap.xml`, favicon, thẻ Open Graph (để share Zalo/Facebook có ảnh đẹp).
 
 ### 3.4. Gọi & nhắn trong 1 chạm
-- [ ] Thanh cố định đáy màn hình mobile: **[📞 Gọi ngay] [💬 Zalo]** — to, tương phản cao, không che nội dung.
-- [ ] Hotline nằm trong màn hình đầu tiên (đã có — giữ).
-- [ ] Form yêu cầu: chỉ hỏi **SĐT + vị trí (nút "Lấy vị trí của tôi") + loại sự cố**. Ghi rõ: "Cần gấp? Gọi ngay sẽ nhanh hơn".
-- [ ] Sau khi gửi form: hiển thị "Đã nhận, sẽ gọi lại trong ít phút" — **không hứa "đã điều xe"**.
+- [x] Thanh cố định đáy màn hình mobile: **[📞 Gọi ngay] [💬 Zalo]** — to, tương phản cao, không che nội dung.
+- [x] Hotline nằm trong màn hình đầu tiên (đã có — giữ).
+- [x] Form yêu cầu: chỉ hỏi **SĐT + vị trí (nút "Lấy vị trí của tôi") + loại sự cố**. Ghi rõ: "Cần gấp? Gọi ngay sẽ nhanh hơn".
+- [x] Sau khi gửi form: hiển thị "Đã nhận, sẽ gọi lại trong ít phút" — **không hứa "đã điều xe"**.
 
 ### 3.5. Nội dung trung thực
-- [ ] Chỉ giữ "24/7", "đến trong X phút" nếu đã xác nhận ở mục 0.
-- [ ] Mục "Khách hàng nói gì": chỉ giữ nếu là khách thật (tốt nhất là ảnh chụp review Google thật); không thì bỏ.
+- [x] Chỉ giữ "24/7", "đến trong X phút" nếu đã xác nhận ở mục 0.
+- [x] Mục "Khách hàng nói gì": chỉ giữ nếu là khách thật (tốt nhất là ảnh chụp review Google thật); không thì bỏ.
 
 **Xong khi:** PageSpeed mobile ≥ 85, xem nguồn trang (Ctrl+U) thấy đủ giá/dịch vụ, không còn `href="#"`.
 
@@ -170,7 +170,7 @@ Bài hướng dẫn (viết dần, không bắt buộc ngay):
 - [ ] Bấm gọi trên điện thoại thật → gọi đúng số.
 - [ ] Bấm Zalo → mở đúng tài khoản.
 - [ ] Gửi form → Telegram nhận được tin; không có token trong code web.
-- [ ] Không còn `admin123`, token, `href="#"`.
+- [x] Không còn `admin123`, token, `href="#"`.
 - [ ] Hotline giống nhau ở web, Google Maps, Facebook, Zalo.
 - [ ] Không có claim chưa xác nhận (24/7, số phút, review giả).
 - [ ] PageSpeed mobile ≥ 85.

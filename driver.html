@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f5f5f5; display: flex; flex-direction: column; height: 100vh; margin: 0; }
@@ -61,6 +61,7 @@
         }
         .btn-start { background: linear-gradient(135deg, #ffca28, #ffb300); color: #333; }
         .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 202, 40, 0.4); }
+        .btn-nav { background: linear-gradient(135deg, #1e88e5, #1565c0); text-decoration: none; margin-bottom: 10px; }
         .btn-stop { background: linear-gradient(135deg, #43a047, #2e7d32); display: none; }
         .btn-stop:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4); }
         
@@ -92,6 +93,8 @@
         
         <div id="statusText" class="status">Sẵn sàng phát định vị cho khách hàng</div>
         
+        <a id="navigateBtn" class="btn btn-nav" href="#" target="_blank" rel="noopener" style="display: none;"><i class="fas fa-route"></i> CHỈ ĐƯỜNG (GOOGLE MAPS)</a>
+
         <button id="btnStart" class="btn btn-start"><i class="fas fa-play"></i> BẮT ĐẦU CHẠY</button>
         <button id="btnStop" class="btn btn-stop"><i class="fas fa-check"></i> HOÀN THÀNH CUỐC</button>
     </div>
@@ -103,6 +106,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <!-- App Logic -->
-    <script src="js/driver.js"></script>
+    <script src="js/driver.js?v=5"></script>
 </body>
 </html>

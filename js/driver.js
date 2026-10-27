@@ -26,9 +26,12 @@ const btnStop = document.getElementById('btnStop');
 const statusText = document.getElementById('statusText');
 
 // Khởi tạo bản đồ Leaflet
-const map = L.map('map').setView([21.0285, 105.8542], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+const map = L.map('map').setView([20.8449, 106.6881], 13);
+// Dùng tile OpenStreetMap France vì một số nhà mạng Việt Nam chặn tile.openstreetmap.org
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors, tiles HOT / OpenStreetMap France',
+    subdomains: 'abc',
+    maxZoom: 19
 }).addTo(map);
 
 // Icon Tài xế (xe cứu hộ)
@@ -40,6 +43,7 @@ const driverIcon = L.divIcon({
 });
 
 let watchId = null;
+let lastSentAt = 0;
 let driverMarker = null;
 let routingControl = null;
 let isFirstLocation = true;
@@ -63,6 +67,11 @@ if (customerLat && customerLng) {
     L.marker([customerLat, customerLng], {icon: customerIcon}).addTo(map)
         .bindPopup('<b>Vị trí Khách hàng</b>').openPopup();
     map.setView([customerLat, customerLng], 14);
+
+    // Mở Google Maps để dẫn đường tới khách
+    const navBtn = document.getElementById('navigateBtn');
+    navBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(customerLat + ',' + customerLng)}&travelmode=driving`;
+    navBtn.style.display = 'flex';
 }
 
 if (!bookingId) {
@@ -177,8 +186,9 @@ btnStart.addEventListener('click', async () => {
                 isFirstLocation = false;
             }
 
-            // Cập nhật Firebase
-            if (db) {
+            // Cập nhật Firebase (tối đa 3 giây/lần để đỡ tốn băng thông)
+            if (db && Date.now() - lastSentAt >= 3000) {
+                lastSentAt = Date.now();
                 db.ref('trackings/' + bookingId).update({
                     lat: lat,
                     lng: lng,
@@ -188,13 +198,18 @@ btnStart.addEventListener('click', async () => {
             }
         },
         (error) => {
-            Swal.fire('Lỗi vị trí', 'Vui lòng cho phép trình duyệt truy cập vị trí (Always Allow) để tiếp tục.', 'error');
-            statusText.innerText = "Bị từ chối quyền vị trí.";
+            // Mất sóng GPS tạm thời (timeout) thì chờ lần cập nhật sau, chỉ báo lỗi khi bị từ chối quyền
+            if (error.code === error.PERMISSION_DENIED) {
+                Swal.fire('Lỗi vị trí', 'Vui lòng cho phép trình duyệt truy cập vị trí (Always Allow) để tiếp tục.', 'error');
+                statusText.innerText = "Bị từ chối quyền vị trí.";
+            } else {
+                statusText.innerText = "Đang chờ tín hiệu GPS...";
+            }
         },
         {
             enableHighAccuracy: true,
             maximumAge: 0,
-            timeout: 5000
+            timeout: 15000
         }
     );
 });

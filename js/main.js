@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
+            menuToggle.setAttribute('aria-expanded', navMenu.classList.contains('active'));
             const icon = menuToggle.querySelector('i');
             if (navMenu.classList.contains('active')) {
                 icon.classList.remove('fa-bars');
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
                 const icon = menuToggle.querySelector('i');
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
