@@ -34,7 +34,7 @@ Repo GitHub đang public nên mấy thứ dưới đây ai cũng đọc được
 
 - [ ] **Thu hồi token Telegram cũ** trong @BotFather (`/revoke`), tạo token mới. *(Chủ bot tự làm.)*
 - [x] Không để token trong code trình duyệt nữa → chuyển việc gửi Telegram sang **1 hàm serverless nhỏ** (Cloudflare Worker, miễn phí). Web chỉ gọi tới Worker; Worker giữ token và chặn spam.
-- [x] **Bỏ trang admin** (`admin.html`, `js/admin.js`) — mật khẩu `admin123` đang nằm trong code. Giá/tin tức sửa thẳng trong HTML (xem Giai đoạn 3).
+- [x] **Bỏ trang admin** (`admin.html`, `js/admin.js`) — mật khẩu `admin123` đang nằm trong code. Giá/tin tức sửa thẳng trong HTML (xem Giai đoạn 3). *(Đã làm lại `admin.html` an toàn: đăng nhập Firebase Auth, chỉ UID trong `/admins` được ghi — xem `firebase/README.md`.)*
 - [ ] **Khoá Firebase Rules**: không để `read, write: if true`. Nếu còn dùng tracking thì chỉ cho ghi đúng nhánh `trackings/`; nếu bỏ tracking thì tắt hẳn Firebase. *(Đã viết sẵn ở `firebase/` — chờ dán lên console.)*
 - [x] Không đưa số điện thoại khách và toạ độ lên URL (`track.html?phone=...&lat=...`). Dùng mã cuốc là đủ.
 - [x] Sửa README đúng hotline.

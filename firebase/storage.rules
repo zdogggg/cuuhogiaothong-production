@@ -1,10 +1,15 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Ảnh logo/banner đã tải lên trước đây: chỉ cho xem, không ai được tải lên/xoá nữa.
+    // Ảnh logo/banner: ai cũng xem được, chỉ tài khoản admin tải lên (ảnh < 2MB).
+    // Thay ADMIN_UID bằng UID tài khoản admin (Firebase console → Authentication → Users).
     match /uploads/{file} {
       allow read: if true;
-      allow write: if false;
+      allow create: if request.auth != null
+                    && request.auth.uid in ['ADMIN_UID']
+                    && request.resource.contentType.matches('image/(webp|jpeg|png)')
+                    && request.resource.size < 2 * 1024 * 1024;
+      allow update, delete: if false;
     }
     match /{allPaths=**} {
       allow read, write: if false;

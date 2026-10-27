@@ -3,9 +3,36 @@
     ".read": false,
     ".write": false,
 
-    "settings": { ".read": true },
-    "pricing": { ".read": true },
-    "news": { ".read": true },
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      "logoUrl": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().beginsWith('https://')) && newData.val().length < 1000" },
+      "footerLogoUrl": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().beginsWith('https://')) && newData.val().length < 1000" },
+      "bannerUrl": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().beginsWith('https://')) && newData.val().length < 1000" },
+      "$other": { ".validate": false }
+    },
+
+    "pricing": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      "$itemId": {
+        ".validate": "newData.hasChildren(['vehicle'])",
+        "group": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "vehicle": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 200" },
+        "basePrice": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "extraPrice": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "description": { ".validate": "newData.isString() && newData.val().length <= 1000" },
+        "order": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
 
     "trackings": {
       "$bookingId": {

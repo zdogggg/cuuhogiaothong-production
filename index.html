@@ -72,7 +72,7 @@
             transform: scale(1.1);
         }
     </style>
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -261,8 +261,8 @@
     <section class="pricing section-padding" id="pricing" style="background: var(--bg-light);">
         <div class="container">
             <h2 class="section-title">BẢNG GIÁ THAM KHẢO</h2>
-            <!-- TODO: điền giá thật vào cột "Giá tham khảo" (vd: "Từ 500.000đ"). Chưa có giá thì giữ "Báo giá khi gọi". -->
-            <div class="pricing-table-wrapper">
+            <!-- Bảng mặc định. Khi có giá trong trang quản trị (admin.html), js/site-data.js sẽ thay bằng bảng giá đó. -->
+            <div class="pricing-table-wrapper" id="publicPricingList">
                 <table class="pricing-table pricing-table--simple">
                     <thead>
                         <tr>
@@ -562,8 +562,9 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js" defer></script>
-    <script src="js/main.js?v=3" defer></script>
-    <script src="js/telegram.js?v=3" defer></script>
+    <script src="js/main.js?v=4" defer></script>
+    <script src="js/telegram.js?v=4" defer></script>
+    <script src="js/site-data.js?v=5" defer></script>
 </body>
 
 </html>
