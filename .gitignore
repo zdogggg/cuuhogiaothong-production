@@ -1,0 +1,6 @@
+# Secret khi chạy Worker ở máy (npx wrangler dev) — không bao giờ commit
+.dev.vars
+worker/.dev.vars
+worker/.wrangler/
+node_modules/
+.env
