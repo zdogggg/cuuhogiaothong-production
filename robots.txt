@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /driver.html
+Disallow: /track.html
+
+Sitemap: https://zdogggg.github.io/cuuhogiaothong-production/sitemap.xml
