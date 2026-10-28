@@ -1094,3 +1094,50 @@ a.hotline-box { display: block; }
     .float-phone { animation: none; }
     html { scroll-behavior: auto; }
 }
+
+/* --- SERVICE PAGES (/<dich-vu>/) & FAQ --- */
+.service-page .header { position: sticky; top: 0; }
+.breadcrumb { font-size: 0.85rem; color: var(--text-muted); padding: 18px 0 0; }
+.breadcrumb a { color: var(--primary-color); font-weight: 600; }
+.svc-hero { padding: 25px 0 40px; }
+.svc-hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+.svc-hero h1 { font-size: 2.3rem; line-height: 1.2; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; }
+.svc-intro { font-size: 1.05rem; line-height: 1.7; margin-bottom: 25px; }
+.svc-cta { display: flex; gap: 15px; flex-wrap: wrap; }
+.svc-hero-img { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+.svc-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 40px; padding-bottom: 60px; }
+.svc-content h2 { font-size: 1.4rem; font-weight: 800; margin: 30px 0 12px; }
+.svc-content h2:first-child { margin-top: 0; }
+.svc-content p, .svc-content li { line-height: 1.7; }
+.svc-content a { color: var(--primary-color); font-weight: 600; }
+.svc-list { list-style: none; padding: 0; }
+.svc-list li { padding-left: 28px; position: relative; margin-bottom: 8px; }
+.svc-list li::before { content: '\2713'; position: absolute; left: 0; color: var(--primary-color); font-weight: 900; }
+.svc-steps { padding-left: 22px; list-style: decimal; }
+.svc-steps li { margin-bottom: 8px; }
+.svc-aside { align-self: start; position: sticky; top: 110px; }
+.svc-call-box { background: var(--accent-color); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 25px; }
+.svc-call-box p { font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; }
+.svc-call-box .btn { justify-content: center; width: 100%; font-size: 1.2rem; }
+.svc-call-box small { display: block; margin-top: 8px; font-weight: 600; }
+.svc-aside-title { font-size: 1rem; font-weight: 800; margin-bottom: 10px; }
+.svc-related { list-style: none; padding: 0; }
+.svc-related a { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 8px; font-weight: 600; transition: var(--transition); }
+.svc-related a:hover { border-color: var(--primary-color); color: var(--primary-color); }
+.svc-related i { color: var(--primary-color); width: 20px; text-align: center; }
+
+.faq-item { border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 10px; background: var(--white); }
+.faq-item summary { cursor: pointer; padding: 14px 16px; font-weight: 700; list-style: none; position: relative; padding-right: 40px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; color: var(--primary-color); }
+.faq-item[open] summary::after { content: '\2212'; }
+.faq-item p { padding: 0 16px 14px; line-height: 1.7; }
+.faq-list { max-width: 850px; margin: 0 auto; }
+.service-card-link { display: block; color: inherit; height: 100%; }
+.service-card .svc-more { display: inline-block; margin-top: 10px; font-size: 0.85rem; font-weight: 700; color: var(--primary-color); }
+
+@media (max-width: 900px) {
+    .svc-hero-grid, .svc-body { grid-template-columns: 1fr; }
+    .svc-hero h1 { font-size: 1.8rem; }
+    .svc-aside { position: static; }
+}
