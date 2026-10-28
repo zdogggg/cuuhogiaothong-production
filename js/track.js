@@ -13,7 +13,7 @@ const firebaseConfig = {
 let db;
 if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
     firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
+    db = firebase.firestore();
 }
 
 // Khởi tạo bản đồ Leaflet (mặc định ở trung tâm Hải Phòng)
@@ -93,107 +93,148 @@ if (customerLat && customerLng) {
     map.setView([customerLat, customerLng], 14);
 }
 
+const STALE_AFTER_MS = 60 * 1000;
+let lastTimestampMs = null; // timestamp (giờ máy chủ) của lần cập nhật gần nhất
+let lastUpdateAt = null;    // thời điểm (giờ máy khách) nhận được cập nhật đó
+
+const $ = (id) => document.getElementById(id);
+
+function setProgress(step) {
+    const fills = { 1: '0%', 2: 'calc(50% - 15px)', 3: 'calc(100% - 30px)' };
+    $('progressFill').style.width = fills[step];
+    $('progressFill').style.background = step === 3 ? '#43a047' : '#ffb300';
+    $('step1').className = 'step done';
+    $('step2').className = step === 2 ? 'step active' : (step === 3 ? 'step done' : 'step');
+    $('step3').className = step === 3 ? 'step done' : 'step';
+}
+
+// Báo khách khi vị trí xe đã cũ (tài xế mất sóng, chuyển app hoặc tắt màn hình)
+function updateStaleNotice() {
+    const notice = $('staleNotice');
+    if (!lastUpdateAt || latestStatus === 'arrived') {
+        notice.style.display = 'none';
+        return;
+    }
+    const age = Date.now() - lastUpdateAt;
+    if (latestStatus === 'paused' || age > STALE_AFTER_MS) {
+        const minutes = Math.max(1, Math.round(age / 60000));
+        notice.innerHTML = latestStatus === 'paused'
+            ? 'Vị trí xe đang tạm dừng cập nhật (tài xế có thể đang dùng app dẫn đường). Xe vẫn đang tới — cần hỏi thêm, gọi <a href="tel:0979032589">0979 032 589</a>.'
+            : `Vị trí xe chưa cập nhật khoảng ${minutes} phút (có thể do mất sóng). Cần hỏi thêm, gọi <a href="tel:0979032589">0979 032 589</a>.`;
+        notice.style.display = 'block';
+    } else {
+        notice.style.display = 'none';
+    }
+}
+
 if (!bookingId) {
     alert("Không tìm thấy mã chuyến xe!");
 } else if (db) {
-    // Lắng nghe dữ liệu vị trí tài xế từ Firebase
-    const trackingRef = db.ref('trackings/' + bookingId);
-    
-    trackingRef.on('value', (snapshot) => {
-        const data = snapshot.val();
+    setInterval(updateStaleNotice, 10000);
+
+    // Lắng nghe dữ liệu vị trí tài xế từ Cloud Firestore
+    db.collection('trackings').doc(bookingId).onSnapshot((doc) => {
+        if (!doc.exists) return;
+        const data = doc.data();
+        if (!data) return;
+
+        latestStatus = data.status;
+
+        // Firestore không cho biết lệch giờ máy khách/máy chủ, nên đo "độ cũ" theo giờ máy khách
+        // tính từ lúc nhận được cập nhật. Lần đầu mở trang thì lấy giờ máy chủ (nếu không ở tương lai)
+        // để vị trí đã cũ sẵn vẫn được báo ngay.
+        const tsMs = data.timestamp && typeof data.timestamp.toMillis === 'function'
+            ? data.timestamp.toMillis()
+            : (typeof data.timestamp === 'number' ? data.timestamp : null);
+        if (tsMs !== lastTimestampMs) {
+            lastUpdateAt = tsMs === null ? null
+                : (lastTimestampMs === null ? Math.min(Date.now(), tsMs) : Date.now());
+            lastTimestampMs = tsMs;
+        }
+        updateStaleNotice();
+
+        $('loader').style.display = 'none';
+        $('progressBlock').style.display = 'block';
+        $('driverInfo').style.display = 'flex';
+
+        if (data.status === 'arrived') {
+            // Hoàn thành: tài xế đã xoá toạ độ, chỉ cập nhật giao diện
+            $('statusTitle').innerText = 'ĐÃ HOÀN THÀNH CUỐC XE!';
+            $('statusTitle').style.color = '#1976d2'; // Xanh dương
+            $('statusDesc').innerText = 'Xe cứu hộ đã đến vị trí của bạn.';
+            $('distanceText').innerText = 'Hoàn thành';
+            setProgress(3);
+            return;
+        }
+
+        $('statusTitle').innerText = 'Xe cứu hộ đang tới!';
+        $('statusTitle').style.color = '#2e7d32'; // Xanh lá
+        $('statusDesc').innerText = 'Tài xế đang di chuyển đến vị trí của bạn.';
+        setProgress(2);
+
+        if (typeof data.lat !== 'number' || typeof data.lng !== 'number') return;
+
+        const newPos = [data.lat, data.lng];
+        lastDriverPos = newPos;
+
+        // Vẽ/Cập nhật Marker trên bản đồ
+        if (!driverMarker) {
+            driverMarker = L.marker(newPos, {icon: towTruckIcon}).addTo(map);
+        } else {
+            driverMarker.setLatLng(newPos);
+        }
         
-        if (data && data.lat && data.lng) {
-            // Cập nhật giao diện khi có tín hiệu
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('progressBlock').style.display = 'block';
-            
-            if (data.status === 'arrived') {
-                document.getElementById('statusTitle').innerText = 'ĐÃ HOÀN THÀNH CUỐC XE!';
-                document.getElementById('statusTitle').style.color = '#1976d2'; // Xanh dương
-                document.getElementById('statusDesc').innerText = 'Xe cứu hộ đã đến vị trí của bạn thành công.';
-                document.getElementById('distanceText').innerText = 'Hoàn thành';
-                
-                document.getElementById('progressFill').style.width = 'calc(100% - 30px)';
-                document.getElementById('progressFill').style.background = '#43a047';
-                document.getElementById('step1').className = 'step done';
-                document.getElementById('step2').className = 'step done';
-                document.getElementById('step3').className = 'step done';
-            } else {
-                document.getElementById('statusTitle').innerText = 'Xe cứu hộ đang tới!';
-                document.getElementById('statusTitle').style.color = '#2e7d32'; // Xanh lá
-                document.getElementById('statusDesc').innerText = 'Tài xế đang di chuyển đến vị trí của bạn.';
-                
-                document.getElementById('progressFill').style.width = 'calc(50% - 15px)';
-                document.getElementById('progressFill').style.background = '#ffb300';
-                document.getElementById('step1').className = 'step done';
-                document.getElementById('step2').className = 'step active';
-                document.getElementById('step3').className = 'step';
-            }
-            document.getElementById('driverInfo').style.display = 'flex';
-            
-            const newPos = [data.lat, data.lng];
-            latestStatus = data.status;
-            lastDriverPos = newPos;
-
-            // Vẽ/Cập nhật Marker trên bản đồ
-            if (!driverMarker) {
-                driverMarker = L.marker(newPos, {icon: towTruckIcon}).addTo(map);
-            } else {
-                driverMarker.setLatLng(newPos);
-            }
-            
-            // Vẽ đường đi
-            if (customerLat && customerLng) {
-                if (!routingControl) {
-                    routingControl = L.Routing.control({
-                        waypoints: [
-                            L.latLng(data.lat, data.lng),
-                            L.latLng(customerLat, customerLng)
-                        ],
-                        createMarker: function() { return null; },
-                        addWaypoints: false,
-                        routeWhileDragging: false,
-                        show: false,
-                        lineOptions: {
-                            styles: [{color: '#d32f2f', opacity: 0.8, weight: 5, dashArray: '10, 10'}]
-                        }
-                    }).addTo(map);
-                    
-                    // Không gọi được máy chủ tính đường thì vẽ đường thẳng + khoảng cách ước lượng
-                    routingControl.on('routingerror', showStraightLine);
-
-                    // Cập nhật text khoảng cách và ETA
-                    routingControl.on('routesfound', function(e) {
-                        if (straightLine) {
-                            map.removeLayer(straightLine);
-                            straightLine = null;
-                        }
-                        const routes = e.routes;
-                        const distance = routes[0].summary.totalDistance; // mét
-                        const time = routes[0].summary.totalTime; // giây
-                        if (latestStatus !== 'arrived') {
-                            const minutes = Math.ceil(time / 60);
-                            document.getElementById('distanceText').innerHTML = `Khoảng cách: ${(distance/1000).toFixed(1)} km<br><span style="color:#d32f2f; font-weight:700;">Dự kiến: ${minutes} phút</span>`;
-                        }
-                    });
-                } else {
-                    routingControl.setWaypoints([
+        // Vẽ đường đi
+        if (customerLat && customerLng) {
+            if (!routingControl) {
+                routingControl = L.Routing.control({
+                    waypoints: [
                         L.latLng(data.lat, data.lng),
                         L.latLng(customerLat, customerLng)
-                    ]);
-                }
-            }
+                    ],
+                    createMarker: function() { return null; },
+                    addWaypoints: false,
+                    routeWhileDragging: false,
+                    show: false,
+                    lineOptions: {
+                        styles: [{color: '#d32f2f', opacity: 0.8, weight: 5, dashArray: '10, 10'}]
+                    }
+                }).addTo(map);
+                
+                // Không gọi được máy chủ tính đường thì vẽ đường thẳng + khoảng cách ước lượng
+                routingControl.on('routingerror', showStraightLine);
 
-            // Chỉ đưa map về giữa ở lần đầu tiên hoặc nếu khách k có tọa độ
-            if (isFirstLocation) {
-                if (customerLat && customerLng) {
-                    const bounds = L.latLngBounds([newPos, [customerLat, customerLng]]);
-                    map.fitBounds(bounds, {padding: [50, 50]});
-                } else {
-                    map.setView(newPos, 15);
-                }
-                isFirstLocation = false;
+                // Cập nhật text khoảng cách và ETA
+                routingControl.on('routesfound', function(e) {
+                    if (straightLine) {
+                        map.removeLayer(straightLine);
+                        straightLine = null;
+                    }
+                    const routes = e.routes;
+                    const distance = routes[0].summary.totalDistance; // mét
+                    const time = routes[0].summary.totalTime; // giây
+                    if (latestStatus !== 'arrived') {
+                        const minutes = Math.ceil(time / 60);
+                        $('distanceText').innerHTML = `Khoảng cách: ${(distance/1000).toFixed(1)} km<br><span style="color:#d32f2f; font-weight:700;">Dự kiến: ${minutes} phút</span>`;
+                    }
+                });
+            } else {
+                routingControl.setWaypoints([
+                    L.latLng(data.lat, data.lng),
+                    L.latLng(customerLat, customerLng)
+                ]);
             }
+        }
+
+        // Chỉ đưa map về giữa ở lần đầu tiên hoặc nếu khách k có tọa độ
+        if (isFirstLocation) {
+            if (customerLat && customerLng) {
+                const bounds = L.latLngBounds([newPos, [customerLat, customerLng]]);
+                map.fitBounds(bounds, {padding: [50, 50]});
+            } else {
+                map.setView(newPos, 15);
+            }
+            isFirstLocation = false;
         }
     });
 } else {

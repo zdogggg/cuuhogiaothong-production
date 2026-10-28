@@ -28,6 +28,25 @@ npx wrangler deploy
    Dán địa chỉ đó vào `RESCUE_API_URL` ở đầu file `js/telegram.js`.
 4. Khi có tên miền riêng: sửa `SITE_URL` và `ALLOWED_ORIGINS` trong `wrangler.toml`, chạy lại `npx wrangler deploy`.
 
+## Tự xoá dữ liệu tracking cũ (khuyên dùng)
+
+Worker chạy mỗi giờ, xoá các document trong collection Firestore `trackings` có `timestamp` cũ hơn 24 giờ. Cần một khoá service account để Worker có quyền xoá:
+
+1. Google Cloud Console → IAM & Admin → Service Accounts (project `cuuhogiaothong123`) → **Create service account**,
+   cấp đúng 1 vai trò **Cloud Datastore User** (đủ để đọc/xoá document Firestore; đừng dùng khoá "firebase-adminsdk" mặc định — quyền quá rộng).
+2. Vào service account vừa tạo → Keys → Add key → JSON → tải file về.
+3. Trong thư mục `worker/`:
+
+```bash
+npx wrangler secret put FIREBASE_SERVICE_ACCOUNT
+```
+
+   Dán **toàn bộ nội dung file JSON** khi được hỏi, rồi **xoá file JSON khỏi máy**.
+
+4. `npx wrangler deploy` lại. Xem log dọn dẹp: Cloudflare dashboard → Workers → `cuuho-rescue-form` → Logs.
+
+Chưa cài bước này thì Worker vẫn chạy bình thường, chỉ bỏ qua việc dọn dẹp. Ngoài ra, khi tài xế bấm **Hoàn thành**, toạ độ xe đã được xoá ngay.
+
 ## Chạy thử ở máy (với Docker cổng 8082)
 
 Tạo file `worker/.dev.vars` (đã nằm trong `.gitignore`, không commit):

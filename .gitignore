@@ -4,3 +4,7 @@ worker/.dev.vars
 worker/.wrangler/
 node_modules/
 .env
+
+# Khoá service account Google — không bao giờ commit
+*service-account*.json
+*-firebase-adminsdk-*.json

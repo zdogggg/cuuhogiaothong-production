@@ -1,6 +1,6 @@
-// Lấy bảng giá và logo/banner do admin cập nhật (Firebase Realtime Database, đọc qua REST — không cần tải SDK).
+// Lấy bảng giá và logo/banner do admin cập nhật từ Cloud Firestore qua REST API (không cần tải SDK lớn trên trang chủ).
 // Không có dữ liệu hoặc lỗi mạng thì giữ nguyên nội dung sẵn có trong HTML.
-const SITE_DB_URL = 'https://cuuhogiaothong123-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogiaothong123/databases/(default)/documents';
 
 (function () {
     function esc(value) {
@@ -19,10 +19,44 @@ const SITE_DB_URL = 'https://cuuhogiaothong123-default-rtdb.asia-southeast1.fire
         return typeof url === 'string' && url.startsWith('https://');
     }
 
-    async function getJson(path) {
+    function parseFirestoreDoc(doc) {
+        if (!doc || !doc.fields) return null;
+        const res = {};
+        for (const [k, v] of Object.entries(doc.fields)) {
+            if ('stringValue' in v) res[k] = v.stringValue;
+            else if ('integerValue' in v) res[k] = parseInt(v.integerValue, 10);
+            else if ('doubleValue' in v) res[k] = parseFloat(v.doubleValue);
+            else if ('booleanValue' in v) res[k] = v.booleanValue;
+            else if ('nullValue' in v) res[k] = null;
+            else res[k] = Object.values(v)[0];
+        }
+        return res;
+    }
+
+    async function getFirestoreSettings() {
         try {
-            const res = await fetch(`${SITE_DB_URL}/${path}.json`);
-            return res.ok ? await res.json() : null;
+            const res = await fetch(`${FIRESTORE_API_BASE}/settings/general`);
+            if (!res.ok) return null;
+            const doc = await res.json();
+            return parseFirestoreDoc(doc);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function getFirestorePricing() {
+        try {
+            const res = await fetch(`${FIRESTORE_API_BASE}/pricing`);
+            if (!res.ok) return null;
+            const json = await res.json();
+            if (!json.documents || !Array.isArray(json.documents)) return null;
+            const items = {};
+            json.documents.forEach(doc => {
+                const id = doc.name.split('/').pop();
+                const parsed = parseFirestoreDoc(doc);
+                if (parsed) items[id] = parsed;
+            });
+            return items;
         } catch (e) {
             return null;
         }
@@ -88,7 +122,7 @@ const SITE_DB_URL = 'https://cuuhogiaothong123-default-rtdb.asia-southeast1.fire
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-        const [pricing, settings] = await Promise.all([getJson('pricing'), getJson('settings')]);
+        const [pricing, settings] = await Promise.all([getFirestorePricing(), getFirestoreSettings()]);
         renderPricing(pricing);
         applySettings(settings);
     });

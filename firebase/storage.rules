@@ -6,7 +6,7 @@ service firebase.storage {
     match /uploads/{file} {
       allow read: if true;
       allow create: if request.auth != null
-                    && request.auth.uid in ['ADMIN_UID']
+                    && request.auth.uid in ['2snAyZoB4HSReQqN5ct87CVndGf1']
                     && request.resource.contentType.matches('image/(webp|jpeg|png)')
                     && request.resource.size < 2 * 1024 * 1024;
       allow update, delete: if false;

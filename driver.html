@@ -61,7 +61,8 @@
         }
         .btn-start { background: linear-gradient(135deg, #ffca28, #ffb300); color: #333; }
         .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 202, 40, 0.4); }
-        .btn-nav { background: linear-gradient(135deg, #1e88e5, #1565c0); text-decoration: none; margin-bottom: 10px; }
+        .keep-open-hint { margin-top: 12px; font-size: 0.8rem; color: #8a5a00; background: #fff8e1; padding: 8px 10px; border-radius: 10px; line-height: 1.4; }
+        .btn-nav {background: linear-gradient(135deg, #1e88e5, #1565c0); text-decoration: none; margin-bottom: 10px; }
         .btn-stop { background: linear-gradient(135deg, #43a047, #2e7d32); display: none; }
         .btn-stop:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4); }
         
@@ -97,6 +98,8 @@
 
         <button id="btnStart" class="btn btn-start"><i class="fas fa-play"></i> BẮT ĐẦU CHẠY</button>
         <button id="btnStop" class="btn btn-stop"><i class="fas fa-check"></i> HOÀN THÀNH CUỐC</button>
+
+        <p class="keep-open-hint"><i class="fas fa-exclamation-triangle"></i> Giữ trang này mở khi chạy. Chuyển sang app khác (kể cả Google Maps) hoặc tắt màn hình thì khách sẽ không thấy xe di chuyển.</p>
     </div>
 
     <!-- Leaflet JS -->
@@ -104,8 +107,8 @@
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <!-- App Logic -->
-    <script src="js/driver.js?v=5"></script>
+    <script src="js/driver.js?v=6"></script>
 </body>
 </html>

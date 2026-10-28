@@ -6,6 +6,7 @@ compatibility_date = "2025-01-01"
 # Sửa 2 dòng này khi có tên miền riêng
 SITE_URL = "https://zdogggg.github.io/cuuhogiaothong-production"
 ALLOWED_ORIGINS = "https://zdogggg.github.io,http://localhost:8082,http://127.0.0.1:8082"
+FIREBASE_PROJECT_ID = "cuuhogiaothong123"
 
 # Tối đa 3 lần gửi / 60 giây / IP
 [[ratelimits]]
@@ -15,3 +16,7 @@ namespace_id = "1001"
   [ratelimits.simple]
   limit = 3
   period = 60
+
+# Mỗi giờ (phút 17) dọn dữ liệu tracking cũ hơn 24 giờ
+[triggers]
+crons = ["17 * * * *"]

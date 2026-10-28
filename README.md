@@ -12,10 +12,11 @@ Kế hoạch phát triển: xem [PLAN.md](PLAN.md).
 | `driver.html`, `js/driver.js` | Trang tài xế phát vị trí GPS (mở từ link Telegram) |
 | `track.html`, `js/track.js` | Trang khách theo dõi xe sau khi gửi form |
 | `admin.html`, `js/admin.js` | Trang quản trị: bảng giá, logo/banner (đăng nhập Firebase Auth) |
-| `js/site-data.js` | Trang chủ lấy bảng giá, logo/banner từ Firebase (giữ bảng mặc định nếu chưa có) |
+| `js/site-data.js` | Trang chủ lấy bảng giá, logo/banner từ Firestore qua REST (giữ bảng mặc định nếu chưa có) |
 | `js/telegram.js` | Form yêu cầu cứu hộ → gửi tới Cloudflare Worker |
 | `worker/` | Cloudflare Worker giữ token Telegram (xem `worker/README.md`) |
-| `firebase/` | Rules Firebase + hướng dẫn tạo tài khoản admin (`firebase/README.md`) |
+| `firestore.rules`, `firebase.json` | Rules Cloud Firestore (deploy bằng `firebase deploy --only firestore:rules`) |
+| `firebase/` | Rules Storage + hướng dẫn tạo tài khoản admin (`firebase/README.md`) |
 | `images/` | Ảnh WebP đã nén; ảnh gốc ở `images/goc/` (không đưa lên web) |
 | `nginx.conf` | Cấu hình nginx: gzip, cache, header bảo mật, trang 404 |
 

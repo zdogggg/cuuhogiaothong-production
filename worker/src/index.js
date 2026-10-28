@@ -7,6 +7,8 @@
 //   SITE_URL            (var)  vd: https://cuuho123.vn  — dùng để tạo link nhận cuốc cho tài xế
 //   ALLOWED_ORIGINS     (var)  danh sách origin cách nhau bởi dấu phẩy
 //   RATE_LIMITER        (binding, tùy chọn) giới hạn số lần gửi theo IP
+//   FIREBASE_PROJECT_ID       (var)     project Firestore chứa collection "trackings"
+//   FIREBASE_SERVICE_ACCOUNT  (secret, tùy chọn) JSON service account; thiếu thì bỏ qua việc dọn dẹp
 
 const SERVICES = [
     'Kéo xe', 'Kích bình', 'Thay lốp', 'Tiếp nhiên liệu',
@@ -107,8 +109,86 @@ export default {
         }
 
         return json({ ok: true, bookingId }, 200, cors);
+    },
+
+    // Chạy theo lịch (wrangler.toml → [triggers]): xoá dữ liệu tracking cũ hơn 24 giờ
+    async scheduled(event, env, ctx) {
+        ctx.waitUntil(cleanupTrackings(env));
     }
 };
+
+const TRACKING_TTL_MS = 24 * 60 * 60 * 1000;
+
+async function cleanupTrackings(env) {
+    if (!env.FIREBASE_SERVICE_ACCOUNT || !env.FIREBASE_PROJECT_ID) {
+        console.log('cleanup skipped: missing FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID');
+        return 0;
+    }
+    const token = await getGoogleAccessToken(JSON.parse(env.FIREBASE_SERVICE_ACCOUNT));
+    const docsRoot = `projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents`;
+    const api = `https://firestore.googleapis.com/v1/${docsRoot}`;
+    const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+    const cutoff = new Date(Date.now() - TRACKING_TTL_MS).toISOString();
+
+    // Tìm cuốc có timestamp (serverTimestamp của trang tài xế) cũ hơn 24 giờ
+    const res = await fetch(`${api}:runQuery`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            structuredQuery: {
+                from: [{ collectionId: 'trackings' }],
+                where: { fieldFilter: { field: { fieldPath: 'timestamp' }, op: 'LESS_THAN', value: { timestampValue: cutoff } } },
+                select: { fields: [] },
+                limit: 500
+            }
+        })
+    });
+    if (!res.ok) throw new Error(`query failed ${res.status}: ${await res.text()}`);
+    const names = (await res.json()).map(r => r.document && r.document.name).filter(Boolean);
+    if (names.length === 0) return 0;
+
+    const del = await fetch(`${api}:commit`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ writes: names.map(name => ({ delete: name })) })
+    });
+    if (!del.ok) throw new Error(`delete failed ${del.status}: ${await del.text()}`);
+    console.log(`cleanup: removed ${names.length} old trackings`);
+    return names.length;
+}
+
+// Đổi service account lấy access token Google (OAuth2 JWT bearer), ký RS256 bằng WebCrypto
+async function getGoogleAccessToken(sa) {
+    const now = Math.floor(Date.now() / 1000);
+    const header = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+    const claims = b64url(JSON.stringify({
+        iss: sa.client_email,
+        scope: 'https://www.googleapis.com/auth/datastore',
+        aud: 'https://oauth2.googleapis.com/token',
+        iat: now,
+        exp: now + 3600
+    }));
+    const pem = sa.private_key.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+    const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey('pkcs8', der, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
+    const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(`${header}.${claims}`));
+    const jwt = `${header}.${claims}.${b64url(signature)}`;
+
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: jwt })
+    });
+    if (!res.ok) throw new Error(`token failed ${res.status}: ${await res.text()}`);
+    return (await res.json()).access_token;
+}
+
+function b64url(input) {
+    const bytes = typeof input === 'string' ? new TextEncoder().encode(input) : new Uint8Array(input);
+    let bin = '';
+    bytes.forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
 
 function json(data, status, headers) {
     return new Response(JSON.stringify(data), {

@@ -12,8 +12,11 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.database();
+const db = firebase.firestore();
 const storage = firebase.storage();
+
+let unsubscribePricing = null;
+let unsubscribeSettings = null;
 
 // Chuỗi do người nhập → an toàn khi chèn vào HTML
 function esc(value) {
@@ -21,11 +24,25 @@ function esc(value) {
 }
 
 // --- LOGIN LOGIC ---
+// Nút con mắt: hiện/ẩn mật khẩu đang gõ
+document.getElementById('togglePassword').addEventListener('click', (e) => {
+    const input = document.getElementById('adminPassword');
+    const btn = e.currentTarget;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.querySelector('i').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    btn.setAttribute('aria-pressed', String(show));
+    btn.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+    btn.title = show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu';
+    input.focus();
+});
+
 // Đăng nhập bằng Firebase Auth; quyền thật nằm ở Firebase Rules (chỉ UID có trong /admins mới được ghi)
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnLogin');
     btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
     try {
         await auth.signInWithEmailAndPassword(
             document.getElementById('adminEmail').value.trim(),
@@ -43,6 +60,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         Swal.fire('Lỗi', msg, 'error');
     } finally {
         btn.disabled = false;
+        btn.innerHTML = 'Đăng Nhập';
     }
 });
 
@@ -54,19 +72,21 @@ auth.onAuthStateChanged(async (user) => {
 
     let isAdmin = false;
     try {
-        isAdmin = (await db.ref('admins/' + user.uid).get()).val() === true;
+        const adminDoc = await db.collection('admins').doc(user.uid).get();
+        isAdmin = adminDoc.exists;
     } catch (error) {
-        console.error(error);
+        console.error('Lỗi kiểm tra quyền admin:', error);
     }
 
     if (!isAdmin) {
         await auth.signOut();
-        Swal.fire('Không có quyền', 'Tài khoản này chưa được cấp quyền quản trị.', 'error');
+        Swal.fire('Không có quyền', 'Tài khoản này chưa được cấp quyền quản trị trong Firestore (hãy tạo document trong collection admins với ID là UID của bạn).', 'error');
         return;
     }
 
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('adminPassword').value = '';
+    document.getElementById('adminPassword').type = 'password';
     Swal.fire({
         toast: true, position: 'top-end', icon: 'success', title: 'Đăng nhập thành công', showConfirmButton: false, timer: 1500
     });
@@ -75,8 +95,8 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 function logout() {
-    db.ref('pricing').off();
-    db.ref('settings').off();
+    if (unsubscribePricing) unsubscribePricing();
+    if (unsubscribeSettings) unsubscribeSettings();
     auth.signOut().then(() => location.reload());
 }
 
@@ -145,8 +165,9 @@ async function uploadFile(inputId, urlInputId, previewId, maxWidth = 1600) {
 
 // --- SETTINGS CRUD ---
 function loadSettingsData() {
-    db.ref('settings').on('value', snapshot => {
-        const data = snapshot.val() || {};
+    if (unsubscribeSettings) unsubscribeSettings();
+    unsubscribeSettings = db.collection('settings').doc('general').onSnapshot(doc => {
+        const data = doc.exists ? doc.data() : {};
 
         if (data.logoUrl) {
             document.getElementById('setMainLogoUrl').value = data.logoUrl;
@@ -160,6 +181,8 @@ function loadSettingsData() {
             document.getElementById('setBannerUrl').value = data.bannerUrl;
             document.getElementById('previewBanner').src = data.bannerUrl;
         }
+    }, err => {
+        console.error('Lỗi lắng nghe settings:', err);
     });
 }
 
@@ -173,17 +196,24 @@ function saveSettings() {
     if (Object.values(data).some(url => url && !url.startsWith('https://'))) {
         return Swal.fire('Lỗi', 'Link ảnh phải bắt đầu bằng https://', 'error');
     }
-    db.ref('settings').set(data).then(() => {
+    db.collection('settings').doc('general').set(data, { merge: true }).then(() => {
         Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã lưu cấu hình', showConfirmButton: false, timer: 1500 });
-    }).catch(() => Swal.fire('Lỗi', 'Không lưu được. Tài khoản có thể chưa được cấp quyền ghi.', 'error'));
+    }).catch(err => {
+        console.error(err);
+        Swal.fire('Lỗi', 'Không lưu được. Tài khoản có thể chưa được cấp quyền ghi trong Firestore.', 'error');
+    });
 }
 
 // --- PRICING CRUD ---
 let currentPricingData = {};
 
 function loadPricingData() {
-    db.ref('pricing').on('value', (snapshot) => {
-        const data = snapshot.val() || {};
+    if (unsubscribePricing) unsubscribePricing();
+    unsubscribePricing = db.collection('pricing').onSnapshot((snapshot) => {
+        const data = {};
+        snapshot.forEach(doc => {
+            data[doc.id] = doc.data();
+        });
         currentPricingData = data;
 
         const tbody = document.getElementById('pricingTableBody');
@@ -211,6 +241,8 @@ function loadPricingData() {
             `;
             tbody.appendChild(tr);
         });
+    }, err => {
+        console.error('Lỗi lắng nghe bảng giá:', err);
     });
 }
 
@@ -289,9 +321,12 @@ function openPricingModal(id = null) {
     }).then((result) => {
         if (result.isConfirmed) {
             const refId = isEdit ? id : 'svc_' + Date.now();
-            db.ref('pricing/' + refId).set(result.value).then(() => {
+            db.collection('pricing').doc(refId).set(result.value).then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Lưu thành công!', showConfirmButton: false, timer: 1500 });
-            }).catch(() => Swal.fire('Lỗi', 'Không lưu được. Tài khoản có thể chưa được cấp quyền ghi.', 'error'));
+            }).catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi', 'Không lưu được. Tài khoản có thể chưa được cấp quyền ghi trong Firestore.', 'error');
+            });
         }
     });
 }
@@ -308,8 +343,11 @@ function deletePricing(id) {
         cancelButtonText: 'Hủy'
     }).then((result) => {
         if (result.isConfirmed) {
-            db.ref('pricing/' + id).remove().then(() => {
+            db.collection('pricing').doc(id).delete().then(() => {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã xóa!', showConfirmButton: false, timer: 1500 });
+            }).catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi', 'Xóa thất bại.', 'error');
             });
         }
     });

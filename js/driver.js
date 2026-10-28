@@ -13,7 +13,7 @@ const firebaseConfig = {
 let db;
 if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
     firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
+    db = firebase.firestore();
 }
 
 // Lấy mã bookingId từ URL
@@ -44,6 +44,8 @@ const driverIcon = L.divIcon({
 
 let watchId = null;
 let lastSentAt = 0;
+let isFinished = false;
+let hiddenAt = null;
 let driverMarker = null;
 let routingControl = null;
 let isFirstLocation = true;
@@ -109,9 +111,40 @@ function releaseWakeLock() {
         wakeLock.release().then(() => { wakeLock = null; });
     }
 }
+// Trang bị ẩn (chuyển app, tắt màn hình) thì trình duyệt ngừng gửi GPS.
+// Báo trạng thái "tạm dừng" cho khách, và nhắc tài xế khi quay lại trang.
 document.addEventListener('visibilitychange', () => {
-    if (wakeLock !== null && document.visibilityState === 'visible') {
+    const isTracking = watchId !== null && !isFinished;
+
+    if (document.visibilityState === 'hidden') {
+        if (isTracking) {
+            hiddenAt = Date.now();
+            if (db) {
+                db.collection('trackings').doc(bookingId).set({
+                    status: 'paused',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+        }
+        return;
+    }
+
+    if (wakeLock !== null) {
         requestWakeLock();
+    }
+    if (isTracking && hiddenAt) {
+        const seconds = Math.round((Date.now() - hiddenAt) / 1000);
+        hiddenAt = null;
+        lastSentAt = 0; // gửi vị trí mới ngay ở lần GPS kế tiếp
+        if (seconds >= 5) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Đã tạm dừng gửi vị trí',
+                html: `Trong ${seconds} giây trang bị ẩn, khách <b>không thấy xe di chuyển</b>.<br>Khi chạy, hãy giữ trang này mở và màn hình sáng.`,
+                confirmButtonColor: '#d32f2f',
+                confirmButtonText: 'Đã hiểu'
+            });
+        }
     }
 });
 
@@ -189,12 +222,12 @@ btnStart.addEventListener('click', async () => {
             // Cập nhật Firebase (tối đa 3 giây/lần để đỡ tốn băng thông)
             if (db && Date.now() - lastSentAt >= 3000) {
                 lastSentAt = Date.now();
-                db.ref('trackings/' + bookingId).update({
+                db.collection('trackings').doc(bookingId).set({
                     lat: lat,
                     lng: lng,
-                    timestamp: Date.now(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'moving'
-                });
+                }, { merge: true });
             }
         },
         (error) => {
@@ -233,11 +266,16 @@ btnStop.addEventListener('click', () => {
                 navigator.geolocation.clearWatch(watchId);
             }
             
-            // Cập nhật trạng thái Firebase
+            isFinished = true;
+
+            // Cập nhật trạng thái và xoá toạ độ xe — xong cuốc thì không cần lưu vị trí nữa
             if (db) {
-                db.ref('trackings/' + bookingId).update({
-                    status: 'arrived'
-                });
+                db.collection('trackings').doc(bookingId).set({
+                    status: 'arrived',
+                    lat: null,
+                    lng: null,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
             }
             
             statusText.innerText = "Đã hoàn thành cuốc xe.";

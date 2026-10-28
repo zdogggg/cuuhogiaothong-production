@@ -1,0 +1,150 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: admins
+// Document ID: {uid} (Firebase Auth UID)
+// Fields:
+//   - Client writes are completely disabled.
+//   - Users can only read their own admin document to verify permissions.
+//
+// Collection: settings
+// Document ID: {docId} (e.g., 'general')
+// Fields:
+//   - logoUrl: string (optional, <= 1000 chars, empty or https://)
+//   - footerLogoUrl: string (optional, <= 1000 chars, empty or https://)
+//   - bannerUrl: string (optional, <= 1000 chars, empty or https://)
+//
+// Collection: pricing
+// Document ID: {itemId} (e.g., 'svc_12345678')
+// Fields:
+//   - vehicle: string (required, 1-200 chars)
+//   - group: string (optional, <= 100 chars)
+//   - basePrice: string (optional, <= 100 chars)
+//   - extraPrice: string (optional, <= 100 chars)
+//   - description: string (optional, <= 1000 chars)
+//   - order: number (optional, integer or float)
+//
+// Collection: trackings
+// Document ID: {bookingId} (must match pattern ^CH[A-Z0-9]{8}$)
+// Fields:
+//   - status: string (required, enum: 'moving' | 'paused' | 'arrived')
+//   - lat: number (optional, -90 to 90) or null
+//   - lng: number (optional, -180 to 180) or null
+//   - timestamp: number (> 0) or timestamp (optional/system time)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isNumeric(val) {
+      return val is int || val is float;
+    }
+
+    function isValidHttpsUrlOrEmpty(val) {
+      return val is string &&
+        val.size() <= 1000 &&
+        (val == '' || val.matches('^https://.*'));
+    }
+
+    function isValidBookingId(bookingId) {
+      return bookingId is string &&
+        bookingId.matches('^CH[A-Z0-9]{8}$');
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidSettings(data) {
+      return data.keys().hasOnly(['logoUrl', 'footerLogoUrl', 'bannerUrl']) &&
+        (!('logoUrl' in data) || isValidHttpsUrlOrEmpty(data.logoUrl)) &&
+        (!('footerLogoUrl' in data) || isValidHttpsUrlOrEmpty(data.footerLogoUrl)) &&
+        (!('bannerUrl' in data) || isValidHttpsUrlOrEmpty(data.bannerUrl));
+    }
+
+    function isValidPricing(data) {
+      return data.keys().hasAll(['vehicle']) &&
+        data.keys().hasOnly(['vehicle', 'group', 'basePrice', 'extraPrice', 'description', 'order']) &&
+        data.vehicle is string &&
+        data.vehicle.size() >= 1 &&
+        data.vehicle.size() <= 200 &&
+        (!('group' in data) || (data.group is string && data.group.size() <= 100)) &&
+        (!('basePrice' in data) || (data.basePrice is string && data.basePrice.size() <= 100)) &&
+        (!('extraPrice' in data) || (data.extraPrice is string && data.extraPrice.size() <= 100)) &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
+        (!('order' in data) || isNumeric(data.order));
+    }
+
+    function isValidTracking(data) {
+      return data.keys().hasAll(['status']) &&
+        data.keys().hasOnly(['status', 'lat', 'lng', 'timestamp']) &&
+        data.status is string &&
+        data.status in ['moving', 'paused', 'arrived'] &&
+        (!('lat' in data) || data.lat == null || (isNumeric(data.lat) && data.lat >= -90 && data.lat <= 90)) &&
+        (!('lng' in data) || data.lng == null || (isNumeric(data.lng) && data.lng >= -180 && data.lng <= 180)) &&
+        (!('timestamp' in data) || data.timestamp == null || data.timestamp is timestamp || (isNumeric(data.timestamp) && data.timestamp > 0));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // 1. Admins collection
+    // Client write is disabled. Users can only read their own admin document.
+    match /admins/{uid} {
+      allow read: if isAuthenticated() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // 2. Settings collection
+    // Publicly readable. Only authenticated admins can create, update, or delete.
+    match /settings/{docId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidSettings(request.resource.data);
+      allow update: if isAdmin() && isValidSettings(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // 3. Pricing collection
+    // Publicly readable. Only authenticated admins can create, update, or delete.
+    match /pricing/{itemId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidPricing(request.resource.data);
+      allow update: if isAdmin() && isValidPricing(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // 4. Real-time trackings collection
+    // Read and write scoped by bookingId pattern (^CH[A-Z0-9]{8}$).
+    match /trackings/{bookingId} {
+      // Chỉ "get" theo đúng mã cuốc; không cho "list" cả collection (nếu dùng "read" thì ai cũng
+      // liệt kê được mọi cuốc và vị trí xe)
+      allow get: if isValidBookingId(bookingId);
+      allow create: if isValidBookingId(bookingId) && isValidTracking(request.resource.data);
+      allow update: if isValidBookingId(bookingId) && isValidTracking(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // 5. Default deny for all other documents/collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
