@@ -1,5 +1,5 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyAalG0Z_esnaZpnbRTTX45GSOtlK5Ee-Xs",
+    apiKey: "AIzaSyAalGOZ_esnaZpnbRTTX45GSOtlK5Ee-Xs",
     authDomain: "cuuhogiaothong123.firebaseapp.com",
     databaseURL: "https://cuuhogiaothong123-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "cuuhogiaothong123",
@@ -49,15 +49,22 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             document.getElementById('adminPassword').value
         );
     } catch (error) {
+        console.error('Lỗi đăng nhập Firebase:', error);
         let msg = 'Email hoặc mật khẩu không đúng.';
-        if (error.code === 'auth/too-many-requests') {
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            msg = 'Email hoặc mật khẩu không đúng.';
+        } else if (error.code === 'auth/too-many-requests') {
             msg = 'Đăng nhập sai quá nhiều lần. Vui lòng thử lại sau ít phút.';
         } else if (error.code === 'auth/operation-not-allowed' || error.code === 'auth/configuration-not-found') {
-            msg = 'Chưa bật đăng nhập Email/Password trong Firebase (xem firebase/README.md).';
+            msg = 'Chưa bật đăng nhập Email/Password trong Firebase.';
         } else if (error.code === 'auth/network-request-failed') {
             msg = 'Lỗi mạng, vui lòng thử lại.';
+        } else if (error.code === 'auth/api-key-not-valid' || error.code === 'auth/invalid-api-key') {
+            msg = 'Mã API Key không hợp lệ. Vui lòng cập nhật apiKey từ Firebase Console.';
+        } else {
+            msg = `${error.message} (${error.code})`;
         }
-        Swal.fire('Lỗi', msg, 'error');
+        Swal.fire('Lỗi đăng nhập', msg, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = 'Đăng Nhập';
