@@ -1,5 +1,5 @@
 // Địa chỉ Cloudflare Worker nhận form (xem worker/README.md). Token Telegram nằm ở Worker, không ở đây.
-const RESCUE_API_URL = '';
+const RESCUE_API_URL = 'https://cuuho-rescue-form.cuuho123.workers.dev';
 const HOTLINE = '0979032589';
 
 document.addEventListener('DOMContentLoaded', () => {
