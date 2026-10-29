@@ -82,11 +82,11 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
                 const detailsHTML = details.length ? `<ul class="details-list">${details.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : '';
                 rows += `
                     <tr>
-                        <td class="vehicle-name">${esc(item.vehicle)}</td>
-                        <td class="price-val" style="color: #d32f2f;">${esc(formatPrice(item.basePrice))}</td>
-                        <td class="price-val">${esc(formatPrice(item.extraPrice))}</td>
-                        <td style="text-align: center;"><a href="tel:0979032589" class="btn-call-now">Gọi ngay</a></td>
-                        <td>${detailsHTML}</td>
+                        <td class="vehicle-name" data-label="Loại xe">${esc(item.vehicle)}</td>
+                        <td class="price-val" data-label="Cơ bản (dưới 10km)" style="color: #d32f2f;">${esc(formatPrice(item.basePrice))}</td>
+                        <td class="price-val" data-label="Vượt (từ 11km)">${esc(formatPrice(item.extraPrice))}</td>
+                        <td data-label="" style="text-align: center;"><a href="tel:0979032589" class="btn-call-now">Gọi ngay</a></td>
+                        <td data-label="Chi tiết" class="${detailsHTML ? '' : 'is-empty'}">${detailsHTML}</td>
                     </tr>`;
             });
         }
