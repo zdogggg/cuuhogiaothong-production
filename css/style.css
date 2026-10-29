@@ -1141,3 +1141,14 @@ a.hotline-box { display: block; }
     .svc-hero h1 { font-size: 1.8rem; }
     .svc-aside { position: static; }
 }
+
+/* --- BẢN ĐỒ KHU VỰC HOẠT ĐỘNG --- */
+.area-map { height: 380px; border-radius: 12px; overflow: hidden; margin-bottom: 20px; background: #e8eef2; border: 1px solid var(--border-color); z-index: 0; }
+.area-map-error { padding: 20px; text-align: center; color: var(--text-muted); }
+button.area-tag { border: none; cursor: pointer; font-family: inherit; transition: var(--transition); }
+button.area-tag:hover, button.area-tag.is-active { background-color: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+button.area-tag:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
+.area-tag--near { background-color: #f59e0b; }
+button.area-tag--near:hover, button.area-tag--near.is-active { background-color: #d97706; }
+.area-pin span { display: block; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.35); box-sizing: content-box; }
+@media (max-width: 768px) { .area-map { height: 300px; } }

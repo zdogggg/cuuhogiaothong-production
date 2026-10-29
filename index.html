@@ -72,7 +72,7 @@
             transform: scale(1.1);
         }
     </style>
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -406,24 +406,28 @@
                 <!-- Areas Tags -->
                 <div class="areas-box">
                     <h2 class="box-title">KHU VỰC HOẠT ĐỘNG</h2>
-                    <p style="margin-bottom: 15px;">Trọng tâm tại <strong>Hải Phòng</strong>, nhận cứu hộ cả nội thành và ngoại thành:</p>
+                    <p style="margin-bottom: 15px;">Trọng tâm tại <strong>Hải Phòng</strong>, nhận cứu hộ cả nội thành và ngoại thành. Bấm tên khu vực để xem trên bản đồ:</p>
+                    <!-- Bản đồ ghim các khu vực: js/area-map.js đọc toạ độ từ data-lat/data-lng của các nút bên dưới -->
+                    <div id="areaMap" class="area-map" aria-label="Bản đồ các khu vực cứu hộ tại Hải Phòng và tỉnh lân cận">
+                        <noscript><p>Bật JavaScript để xem bản đồ khu vực phục vụ.</p></noscript>
+                    </div>
                     <!-- TODO: kiểm tra lại danh sách khu vực thực tế -->
                     <div class="areas-list">
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hồng Bàng</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Lê Chân</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Ngô Quyền</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hải An</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Kiến An</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Dương Kinh</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Đồ Sơn</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> An Dương</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Thủy Nguyên</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hải Dương</span>
+                        <button type="button" class="area-tag" data-lat="20.8665" data-lng="106.6618"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hồng Bàng</button>
+                        <button type="button" class="area-tag" data-lat="20.8466" data-lng="106.681"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Lê Chân</button>
+                        <button type="button" class="area-tag" data-lat="20.859" data-lng="106.7005"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Ngô Quyền</button>
+                        <button type="button" class="area-tag" data-lat="20.833" data-lng="106.742"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hải An</button>
+                        <button type="button" class="area-tag" data-lat="20.8115" data-lng="106.63"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Kiến An</button>
+                        <button type="button" class="area-tag" data-lat="20.788" data-lng="106.676"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Dương Kinh</button>
+                        <button type="button" class="area-tag" data-lat="20.715" data-lng="106.78"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Đồ Sơn</button>
+                        <button type="button" class="area-tag" data-lat="20.8785" data-lng="106.598"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> An Dương</button>
+                        <button type="button" class="area-tag" data-lat="20.932" data-lng="106.665"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Thủy Nguyên</button>
+                        <button type="button" class="area-tag" data-lat="20.939" data-lng="106.33"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Hải Dương</button>
                     </div>
                     <p style="margin: 15px 0;">Tỉnh lân cận:</p>
                     <div class="areas-list">
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Quảng Ninh</span>
-                        <span class="area-tag"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Thái Bình</span>
+                        <button type="button" class="area-tag area-tag--near" data-lat="20.959" data-lng="107.043"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Quảng Ninh</button>
+                        <button type="button" class="area-tag area-tag--near" data-lat="20.447" data-lng="106.336"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Thái Bình</button>
                     </div>
                 </div>
 
@@ -618,6 +622,7 @@
     <script src="js/main.js?v=5" defer></script>
     <script src="js/telegram.js?v=5" defer></script>
     <script src="js/site-data.js?v=5" defer></script>
+    <script src="js/area-map.js?v=1" defer></script>
 </body>
 
 </html>

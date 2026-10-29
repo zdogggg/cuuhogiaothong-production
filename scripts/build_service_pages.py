@@ -14,7 +14,7 @@ SITE_URL = "https://zdogggg.github.io/cuuhogiaothong-production"
 PHONE = "0979032589"
 PHONE_DISPLAY = "0979 032 589"
 BRAND = "Cứu Hộ Giao Thông 123"
-ASSET_V = "5"  # tăng khi sửa css/style.css hoặc js/main.js
+ASSET_V = "6"  # tăng khi sửa css/style.css hoặc js/main.js
 
 AREAS = "Hồng Bàng, Lê Chân, Ngô Quyền, Hải An, Kiến An, Dương Kinh, Đồ Sơn, An Dương, Thủy Nguyên, Hải Dương và các tỉnh lân cận như Quảng Ninh, Thái Bình"
 
