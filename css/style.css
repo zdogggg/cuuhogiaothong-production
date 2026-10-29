@@ -239,14 +239,16 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-content h1 {
     font-size: 3.5rem;
     font-weight: 900;
-    line-height: 1.1;
-    margin-bottom: 10px;
+    line-height: 1.25;
+    margin-bottom: 12px;
     color: var(--text-dark);
 }
 
 .hero-content h1 span {
     color: var(--primary-color);
     font-size: 4rem;
+    display: inline-block;
+    margin-bottom: 6px;
 }
 
 .hero-subtitle {
@@ -264,9 +266,10 @@ img { max-width: 100%; height: auto; display: block; }
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 600;
     font-size: 1rem;
+    line-height: 1.4;
 }
 
 .hero-features i {
@@ -279,6 +282,7 @@ img { max-width: 100%; height: auto; display: block; }
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .hero-buttons {
@@ -846,10 +850,10 @@ img { max-width: 100%; height: auto; display: block; }
     .hero { padding-top: 0; padding-bottom: 40px; background: #f8f9fa; }
     .hero::after { display: none; }
     .hero-content { padding: 25px; background: #ffffff; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-radius: 16px; margin-top: 15px; position: relative; z-index: 5; backdrop-filter: none; }
-    .hero-content h1 { font-size: 2.2rem; }
-    .hero-content h1 span { font-size: 2.5rem; }
+    .hero-content h1 { font-size: 2.2rem; line-height: 1.28; }
+    .hero-content h1 span { font-size: 2.5rem; display: inline-block; margin-bottom: 6px; }
     .hero-subtitle { font-size: 1rem; }
-    .hero-features li { font-size: 0.9rem; }
+    .hero-features li { font-size: 0.9rem; margin-bottom: 10px; }
     .hero-buttons { flex-direction: column; width: 100%; gap: 12px; }
     .hero-buttons .btn { width: 100%; justify-content: center; }
 
@@ -873,9 +877,28 @@ img { max-width: 100%; height: auto; display: block; }
     .service-card p { font-size: 0.75rem; }
 
     /* Stats */
-    .stats-left { flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .stat-item i { font-size: 1.8rem; }
-    .stat-item h3 { font-size: 1.2rem; }
+    .stats-banner { margin: 35px 0; }
+    .stats-wrapper { flex-direction: column; }
+    .stats-left {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px 12px;
+        padding: 22px 16px;
+    }
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .stat-item i { font-size: 1.8rem; flex-shrink: 0; }
+    .stat-item h3 { font-size: 1.15rem; line-height: 1.1; margin-bottom: 2px; }
+    .stat-item p { font-size: 0.75rem; max-width: none; line-height: 1.3; }
+    .stats-right { padding: 16px; width: 100%; }
+    .hotline-box { min-width: 0; width: 100%; }
+    .hb-top { padding: 12px; gap: 12px; }
+    .hb-top i { font-size: 1.8rem; }
+    .hb-top strong { font-size: 1.5rem; }
+    .hb-bottom { padding: 8px 10px; font-size: 0.85rem; }
 
     /* Process */
     .process-steps-horiz { flex-direction: column; gap: 20px; }
@@ -904,10 +927,23 @@ img { max-width: 100%; height: auto; display: block; }
     .float-zalo img { width: 28px; height: 28px; }
 }
 @media (max-width: 480px) {
-    .hero-content h1 { font-size: 1.8rem; }
-    .hero-content h1 span { font-size: 2rem; }
+    .hero-content h1 { font-size: 1.8rem; line-height: 1.28; }
+    .hero-content h1 span { font-size: 2rem; display: inline-block; margin-bottom: 4px; }
     .hero-subtitle { font-size: 0.9rem; margin-bottom: 12px; }
-    .hero-features li { font-size: 0.85rem; gap: 8px; }
+    .hero-features li { font-size: 0.85rem; gap: 10px; margin-bottom: 10px; }
+
+    .stats-left {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 8px;
+        padding: 16px 10px;
+    }
+    .stat-item { gap: 8px; }
+    .stat-item i { font-size: 1.5rem; }
+    .stat-item h3 { font-size: 1rem; }
+    .stat-item p { font-size: 0.7rem; }
+    .hb-top { gap: 10px; padding: 10px; }
+    .hb-top i { font-size: 1.5rem; }
+    .hb-top strong { font-size: 1.35rem; }
 
     .section-title { font-size: 1.2rem; gap: 8px; }
     .section-title::before, .section-title::after { width: 20px; }
@@ -1152,3 +1188,41 @@ button.area-tag:focus-visible { outline: 3px solid var(--accent-color); outline-
 button.area-tag--near:hover, button.area-tag--near.is-active { background-color: #d97706; }
 .area-pin span { display: block; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.35); box-sizing: content-box; }
 @media (max-width: 768px) { .area-map { height: 300px; } }
+
+/* --- BẢNG GIÁ TRÊN ĐIỆN THOẠI: mỗi dòng thành một thẻ --- */
+@media (max-width: 768px) {
+    .pricing-table-wrapper { overflow: visible; background: transparent; box-shadow: none; }
+    .pricing-table, .pricing-table--simple { min-width: 0; }
+    .pricing-table, .pricing-table tbody, .pricing-table tr, .pricing-table td { display: block; width: 100%; }
+    .pricing-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .pricing-table tr {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        border: 1px solid var(--border-color);
+        padding: 14px 16px;
+        margin-bottom: 12px;
+    }
+    .pricing-table td { border: none; padding: 6px 0; }
+    .pricing-table td[data-label]:not([data-label=""]) { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; text-align: right; }
+    .pricing-table td[data-label]:not([data-label=""])::before {
+        content: attr(data-label);
+        flex: 0 0 auto;
+        max-width: 45%;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+    /* Tên dịch vụ: tiêu đề của thẻ */
+    .pricing-table td.vehicle-name { display: block !important; text-align: left !important; font-size: 1.05rem; padding: 0 0 8px; margin-bottom: 4px; border-bottom: 1px dashed var(--border-color); }
+    .pricing-table td.vehicle-name::before { content: none !important; }
+    .pricing-table .price-val { text-align: right; }
+    .pricing-table td.is-empty { display: none !important; }
+    .pricing-table .details-list { text-align: left; }
+    .pricing-table td[data-label=""] { padding-top: 10px; }
+    .pricing-table .btn-call-now { display: block; width: 100%; padding: 10px; }
+    /* Dòng nhóm (bảng từ admin) */
+    .pricing-table .group-row { background: transparent; box-shadow: none; border: none; padding: 10px 2px 4px; margin: 0; }
+    .pricing-table .group-row td { background: transparent; padding: 0; font-size: 1rem; }
+}
