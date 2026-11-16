@@ -30,14 +30,14 @@ docker compose up -d --build
 
 Mở http://localhost:8082. Sửa code xong chạy lại lệnh trên.
 
-Khi sửa CSS/JS, tăng số `?v=` trong thẻ `<link>`/`<script>` của file HTML để trình duyệt khách tải bản mới.
+Khi sửa CSS/JS, chạy `python scripts/bump_assets.py` trước khi commit: lệnh này tự cập nhật số `?v=` trong mọi file HTML (theo nội dung file) để trình duyệt khách tải bản mới, đồng thời sinh lại 6 trang dịch vụ và sitemap. **Đừng sửa tay** số `?v=` hay file HTML trong các thư mục dịch vụ.
 
 ## Sửa nội dung thường gặp
 
 - **Giá, logo, banner:** vào `/admin.html` (cài đặt lần đầu: `firebase/README.md`). Bảng giá mặc định khi chưa nhập giá nằm trong `index.html`.
 - **Hotline/Zalo:** tìm `0979032589` và `0979 032 589` trong toàn bộ thư mục, đổi đồng loạt (kể cả `js/telegram.js`, `track.html`, `404.html`, JSON-LD).
 - **Nội dung trang dịch vụ:** sửa trong `scripts/build_service_pages.py` rồi chạy `python scripts/build_service_pages.py` và `python scripts/build_sitemap.py`.
-- **Tên miền:** chạy `python scripts/set_domain.py https://ten-mien-moi.vn`, rồi chạy lại 2 script trên.
+- **Tên miền:** chạy `python scripts/set_domain.py https://ten-mien-moi.vn` (tự sinh lại trang + sitemap, tự thêm tên miền vào `ALLOWED_ORIGINS`). Sau đó `cd worker && npx wrangler deploy` và thêm tên miền vào Firebase Authorized domains.
 
 ## Liên hệ
 

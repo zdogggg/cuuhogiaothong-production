@@ -33,7 +33,7 @@ rules_version = '2';
 //   - status: string (required, enum: 'moving' | 'paused' | 'arrived')
 //   - lat: number (optional, -90 to 90) or null
 //   - lng: number (optional, -180 to 180) or null
-//   - timestamp: number (> 0) or timestamp (optional/system time)
+//   - timestamp: timestamp (required, must be the server time of the write — FieldValue.serverTimestamp())
 //
 // ===============================================================
 
@@ -93,13 +93,15 @@ service cloud.firestore {
     }
 
     function isValidTracking(data) {
-      return data.keys().hasAll(['status']) &&
+      // timestamp bắt buộc là giờ máy chủ (serverTimestamp): không ai đặt được mốc giả ở tương lai
+      // để né việc Worker dọn dữ liệu sau 24 giờ.
+      return data.keys().hasAll(['status', 'timestamp']) &&
         data.keys().hasOnly(['status', 'lat', 'lng', 'timestamp']) &&
         data.status is string &&
         data.status in ['moving', 'paused', 'arrived'] &&
         (!('lat' in data) || data.lat == null || (isNumeric(data.lat) && data.lat >= -90 && data.lat <= 90)) &&
         (!('lng' in data) || data.lng == null || (isNumeric(data.lng) && data.lng >= -180 && data.lng <= 180)) &&
-        (!('timestamp' in data) || data.timestamp == null || data.timestamp is timestamp || (isNumeric(data.timestamp) && data.timestamp > 0));
+        data.timestamp == request.time;
     }
 
     // ===============================================================

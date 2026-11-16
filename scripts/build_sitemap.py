@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # cmd/PowerShell Windows in được tiếng Việt
 sys.path.insert(0, str(ROOT / "scripts"))
 from build_service_pages import SERVICES, SITE_URL  # noqa: E402
 

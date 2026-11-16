@@ -5,16 +5,27 @@ Sửa nội dung trong SERVICES rồi chạy lại:
 
 Đổi tên miền: sửa SITE_URL (hoặc chạy scripts/set_domain.py để đổi đồng loạt mọi file).
 """
+import hashlib
 import html
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # cmd/PowerShell Windows in được tiếng Việt
 SITE_URL = "https://zdogggg.github.io/cuuhogiaothong-production"
 PHONE = "0979032589"
 PHONE_DISPLAY = "0979 032 589"
 BRAND = "Cứu Hộ Giao Thông 123"
-ASSET_V = "6"  # tăng khi sửa css/style.css hoặc js/main.js
+
+
+def asset_v(rel):
+    """Số phiên bản ?v= lấy từ nội dung file: file đổi thì số đổi, trình duyệt khách tự tải bản mới."""
+    # Bỏ ký tự CR để số phiên bản giống nhau dù file được checkout kiểu Windows hay Linux
+    data = (ROOT / rel).read_bytes().replace(bytes([13]), b"")
+    return hashlib.md5(data).hexdigest()[:8]
+
 
 AREAS = "Hồng Bàng, Lê Chân, Ngô Quyền, Hải An, Kiến An, Dương Kinh, Đồ Sơn, An Dương, Thủy Nguyên, Hải Dương và các tỉnh lân cận như Quảng Ninh, Thái Bình"
 
@@ -267,7 +278,7 @@ def page(svc):
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css?v={ASSET_V}">
+    <link rel="stylesheet" href="../css/style.css?v={asset_v('css/style.css')}">
     <script type="application/ld+json">
 {json.dumps(service_ld, ensure_ascii=False, indent=4)}
     </script>
@@ -407,7 +418,7 @@ def page(svc):
         <a href="https://zalo.me/{PHONE}" target="_blank" rel="noopener" class="mcb-zalo">ZALO</a>
     </div>
 
-    <script src="../js/main.js?v={ASSET_V}" defer></script>
+    <script src="../js/main.js?v={asset_v('js/main.js')}" defer></script>
 </body>
 
 </html>

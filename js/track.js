@@ -236,6 +236,12 @@ if (!bookingId) {
             }
             isFirstLocation = false;
         }
+    }, (error) => {
+        // Mã cuốc sai định dạng hoặc mất quyền đọc: báo rõ thay vì để khách chờ mãi
+        console.error('Lỗi theo dõi cuốc:', error);
+        $('loader').style.display = 'none';
+        $('statusTitle').innerText = 'Không theo dõi được cuốc này';
+        $('statusDesc').innerHTML = 'Đường link có thể không đúng hoặc đã hết hạn. Vui lòng gọi <a href="tel:0979032589" style="color: #d32f2f; font-weight: 700;">0979 032 589</a> để được hỗ trợ.';
     });
 } else {
     console.log("Firebase chưa được cấu hình. Hệ thống giả lập (Chờ kết nối).");

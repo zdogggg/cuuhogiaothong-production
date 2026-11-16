@@ -37,10 +37,14 @@ export default {
             return json({ ok: false, error: 'forbidden_origin' }, 403, cors);
         }
 
+        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
         if (env.RATE_LIMITER) {
-            const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
             const { success } = await env.RATE_LIMITER.limit({ key: ip });
             if (!success) return json({ ok: false, error: 'rate_limited' }, 429, cors);
+        }
+        // Lớp chặn thứ hai, chạy cả khi binding RATE_LIMITER không có (vd: deploy bằng dashboard)
+        if (!memoryLimit(`ip:${ip}`, 3) || !memoryLimit('all', 30)) {
+            return json({ ok: false, error: 'rate_limited' }, 429, cors);
         }
 
         let body;
@@ -49,6 +53,9 @@ export default {
             if (raw.length > 4000) return json({ ok: false, error: 'too_large' }, 413, cors);
             body = JSON.parse(raw);
         } catch {
+            return json({ ok: false, error: 'bad_json' }, 400, cors);
+        }
+        if (!body || typeof body !== 'object' || Array.isArray(body)) {
             return json({ ok: false, error: 'bad_json' }, 400, cors);
         }
 
@@ -116,6 +123,24 @@ export default {
         ctx.waitUntil(cleanupTrackings(env));
     }
 };
+
+// Giới hạn đơn giản trong bộ nhớ của isolate: tối đa `max` lần mỗi 60 giây cho một khoá.
+// Không chia sẻ giữa các isolate nên chỉ là lớp dự phòng cho binding RATE_LIMITER.
+const WINDOW_MS = 60 * 1000;
+const hits = new Map();
+
+function memoryLimit(key, max) {
+    const now = Date.now();
+    const recent = (hits.get(key) || []).filter(t => now - t < WINDOW_MS);
+    if (recent.length >= max) {
+        hits.set(key, recent);
+        return false;
+    }
+    recent.push(now);
+    hits.set(key, recent);
+    if (hits.size > 5000) hits.clear(); // tránh phình bộ nhớ khi bị quét từ nhiều IP
+    return true;
+}
 
 const TRACKING_TTL_MS = 24 * 60 * 60 * 1000;
 

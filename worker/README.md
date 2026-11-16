@@ -28,6 +28,19 @@ npx wrangler deploy
    Dán địa chỉ đó vào `RESCUE_API_URL` ở đầu file `js/telegram.js`.
 4. Khi có tên miền riêng: sửa `SITE_URL` và `ALLOWED_ORIGINS` trong `wrangler.toml`, chạy lại `npx wrangler deploy`.
 
+## Luôn deploy bằng wrangler
+
+Deploy bằng `npx wrangler deploy` trong thư mục `worker/` (đừng dán code vào dashboard): chỉ cách này mới áp dụng
+giới hạn 3 lần gửi/phút (`RATE_LIMITER`) và lịch dọn dữ liệu trong `wrangler.toml`.
+
+Kiểm tra sau khi deploy — gửi 5 lần liên tiếp, từ lần thứ 4 phải nhận `429`:
+
+```bash
+for i in 1 2 3 4 5; do curl -s -o /dev/null -w "%{http_code} " -X POST -H "Origin: https://zdogggg.github.io" -H "Content-Type: application/json" -d '{"website":"x"}' https://cuuho-rescue-form.cuuho123.workers.dev; done
+```
+
+(Yêu cầu thử này có ô bẫy `website` nên không gửi tin vào Telegram.)
+
 ## Tự xoá dữ liệu tracking cũ (khuyên dùng)
 
 Worker chạy mỗi giờ, xoá các document trong collection Firestore `trackings` có `timestamp` cũ hơn 24 giờ. Cần một khoá service account để Worker có quyền xoá:

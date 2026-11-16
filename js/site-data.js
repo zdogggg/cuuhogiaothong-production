@@ -46,7 +46,8 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
 
     async function getFirestorePricing() {
         try {
-            const res = await fetch(`${FIRESTORE_API_BASE}/pricing`);
+            // pageSize: mặc định API chỉ trả một phần nếu có nhiều dòng giá
+            const res = await fetch(`${FIRESTORE_API_BASE}/pricing?pageSize=200`);
             if (!res.ok) return null;
             const json = await res.json();
             if (!json.documents || !Array.isArray(json.documents)) return null;
