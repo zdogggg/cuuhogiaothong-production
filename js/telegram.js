@@ -45,6 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, () => {
                     notify('Lỗi lấy vị trí', 'Không thể lấy vị trí. Vui lòng cho phép truy cập vị trí hoặc nhập tay.', 'error');
                     icon.className = 'fas fa-map-marker-alt';
+                }, {
+                    // Không đặt timeout thì một số máy chờ GPS mãi, nút quay vòng không dừng
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
                 });
             } else {
                 notify('Lỗi', 'Trình duyệt của bạn không hỗ trợ định vị.', 'error');
@@ -93,8 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSubmitRescue.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG GỬI...';
             btnSubmitRescue.disabled = true;
 
+            // Sóng yếu ven đường có thể làm yêu cầu treo rất lâu: quá 20 giây thì dừng và mời gọi hotline
+            const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const abortTimer = controller ? setTimeout(() => controller.abort(), 20000) : null;
+
             try {
                 const response = await fetch(RESCUE_API_URL, {
+                    signal: controller ? controller.signal : undefined,
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -143,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 notify('Lỗi kết nối', `Không thể gửi yêu cầu lúc này. Vui lòng gọi ngay ${HOTLINE}.`, 'error');
                 console.error(error);
             } finally {
+                if (abortTimer) clearTimeout(abortTimer);
                 btnSubmitRescue.innerHTML = originalBtnText;
                 btnSubmitRescue.disabled = false;
             }

@@ -39,6 +39,26 @@ Khi sửa CSS/JS, chạy `python scripts/bump_assets.py` trước khi commit: l�
 - **Nội dung trang dịch vụ:** sửa trong `scripts/build_service_pages.py` rồi chạy `python scripts/build_service_pages.py` và `python scripts/build_sitemap.py`.
 - **Tên miền:** chạy `python scripts/set_domain.py https://ten-mien-moi.vn` (tự sinh lại trang + sitemap, tự thêm tên miền vào `ALLOWED_ORIGINS`). Sau đó `cd worker && npx wrangler deploy` và thêm tên miền vào Firebase Authorized domains.
 
+## Bảo trì định kỳ
+
+**Mỗi tháng:** gửi thử form từ điện thoại → Telegram nhận tin, mở link tài xế, xe hiện trên trang theo dõi.
+
+**Mỗi năm một lần:**
+- Gia hạn tên miền (bật tự gia hạn).
+- Xem Firebase console → Usage: Firestore đọc/ghi còn xa mức miễn phí (50.000 đọc, 20.000 ghi mỗi ngày).
+- Nâng phiên bản thư viện CDN (Firebase `9.23.0`, Leaflet, SweetAlert2, Font Awesome). Thẻ `<script>`/`<link>`
+  có `integrity="sha384-..."`: đổi phiên bản thì phải tính lại mã này, nếu không trình duyệt sẽ chặn thư viện:
+
+```bash
+curl -sL URL_THU_VIEN | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+- Nâng `compatibility_date` trong `worker/wrangler.toml`, `npx wrangler deploy`, rồi gửi thử form.
+- Đổi mật khẩu tài khoản admin.
+
+Trang tài xế/theo dõi dùng máy chủ tính đường miễn phí của OSRM (không cam kết hoạt động mãi). Khi máy chủ
+đó lỗi, trang theo dõi tự vẽ đường thẳng kèm khoảng cách ước lượng nên vẫn dùng được.
+
 ## Liên hệ
 
 - Hotline / Zalo: 0979 032 589

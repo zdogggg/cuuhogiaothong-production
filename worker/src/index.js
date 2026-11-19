@@ -98,20 +98,9 @@ export default {
         }
         lines.push('', `👉 <a href="${esc(driverLink)}">BẤM VÀO ĐÂY ĐỂ NHẬN CUỐC</a>`);
 
-        const tg = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: env.TELEGRAM_CHAT_ID,
-                text: lines.join('\n'),
-                parse_mode: 'HTML',
-                disable_web_page_preview: true
-            })
-        });
-
-        if (!tg.ok) {
-            // Không trả chi tiết lỗi Telegram về trình duyệt.
-            console.error('Telegram error', tg.status, await tg.text());
+        const sent = await sendTelegram(env, lines.join('\n'));
+        if (!sent) {
+            // Không trả chi tiết lỗi Telegram về trình duyệt; trang web sẽ mời khách gọi hotline.
             return json({ ok: false, error: 'send_failed' }, 502, cors);
         }
 
@@ -123,6 +112,33 @@ export default {
         ctx.waitUntil(cleanupTrackings(env));
     }
 };
+
+// Gửi tin Telegram, thử lại 1 lần nếu Telegram lỗi tạm thời (5xx, 429, mạng chậm).
+// Mỗi lần chờ tối đa 8 giây để khách không phải nhìn vòng quay quá lâu.
+async function sendTelegram(env, text) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: env.TELEGRAM_CHAT_ID,
+                    text,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true
+                }),
+                signal: AbortSignal.timeout(8000)
+            });
+            if (res.ok) return true;
+            console.error('Telegram error', attempt, res.status, await res.text());
+            if (res.status !== 429 && res.status < 500) return false; // lỗi cấu hình (token sai...): thử lại vô ích
+        } catch (err) {
+            console.error('Telegram fetch failed', attempt, err && err.message);
+        }
+        if (attempt === 1) await new Promise(r => setTimeout(r, 1000));
+    }
+    return false;
+}
 
 // Giới hạn đơn giản trong bộ nhớ của isolate: tối đa `max` lần mỗi 60 giây cho một khoá.
 // Không chia sẻ giữa các isolate nên chỉ là lớp dự phòng cho binding RATE_LIMITER.

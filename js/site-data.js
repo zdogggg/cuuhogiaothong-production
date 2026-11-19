@@ -9,9 +9,17 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
 
     function formatPrice(val) {
         if (!val) return '-';
-        let str = val.toString().replace(/\d[\d.]*\d|\d/g, m => parseInt(m.replace(/\./g, ''), 10).toLocaleString('vi-VN'));
-        // Chưa ghi đơn vị tiền (VNĐ, đồng, 500k đ...) thì thêm "VNĐ" sau con số cuối: "15.000/km" → "15.000 VNĐ/km"
-        if (/\d/.test(str) && !/vn[dđ]|đồng|\d\s?(?:đ|k)(?!\p{L})/iu.test(str)) str = str.replace(/(\d[\d.]*)(?!.*\d)/, '$1 VNĐ');
+        // Chỉ định dạng lại số nguyên (15000) hoặc số đã chia nghìn đúng kiểu (15.000);
+        // số thập phân như "1.5tr" hay "1,5 triệu" giữ nguyên (trước đây "1.5tr" bị thành "15tr")
+        let str = String(val).replace(/\d+(?:[.,]\d+)*/g, m => {
+            if (!/^\d+$/.test(m) && !/^\d{1,3}(?:\.\d{3})+$/.test(m)) return m;
+            const n = parseInt(m.replace(/\./g, ''), 10);
+            return n >= 1000 ? n.toLocaleString('vi-VN') : m;
+        });
+        // Chưa ghi đơn vị (VNĐ, đồng, triệu, 500k, 1tr...) thì thêm "VNĐ" sau con số cuối: "15.000/km" → "15.000 VNĐ/km"
+        if (/\d/.test(str) && !/vn[dđ]|đồng|triệu|nghìn|ngàn|\d\s?(?:đ|k|tr)(?!\p{L})/iu.test(str)) {
+            str = str.replace(/(\d+(?:[.,]\d+)*)(?!.*\d)/, '$1 VNĐ');
+        }
         return str;
     }
 
@@ -36,11 +44,12 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
     async function getFirestoreSettings() {
         try {
             const res = await fetch(`${FIRESTORE_API_BASE}/settings/general`);
-            if (!res.ok) return null;
+            if (res.status === 404) return null; // admin chưa lưu cấu hình
+            if (!res.ok) return undefined;
             const doc = await res.json();
             return parseFirestoreDoc(doc);
         } catch (e) {
-            return null;
+            return undefined; // lỗi mạng: không lưu tạm, lần sau thử lại
         }
     }
 
@@ -48,7 +57,7 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
         try {
             // pageSize: mặc định API chỉ trả một phần nếu có nhiều dòng giá
             const res = await fetch(`${FIRESTORE_API_BASE}/pricing?pageSize=200`);
-            if (!res.ok) return null;
+            if (!res.ok) return undefined;
             const json = await res.json();
             if (!json.documents || !Array.isArray(json.documents)) return null;
             const items = {};
@@ -59,7 +68,7 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
             });
             return items;
         } catch (e) {
-            return null;
+            return undefined; // lỗi mạng: không lưu tạm, lần sau thử lại
         }
     }
 
@@ -122,9 +131,37 @@ const FIRESTORE_API_BASE = 'https://firestore.googleapis.com/v1/projects/cuuhogi
         }
     }
 
+    // Lưu tạm 10 phút trên máy khách: khách xem lại trang không tốn thêm lượt đọc Firestore
+    // (gói miễn phí 50.000 lượt/ngày dùng chung với trang theo dõi xe). Admin sửa giá thì
+    // khách đang có bản lưu tạm sẽ thấy giá mới sau tối đa 10 phút.
+    const CACHE_KEY = 'siteData_v1';
+    const CACHE_TTL_MS = 10 * 60 * 1000;
+
+    function readCache() {
+        try {
+            const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached;
+        } catch (e) { /* localStorage bị chặn: bỏ qua */ }
+        return null;
+    }
+
+    function writeCache(pricing, settings) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), pricing, settings }));
+        } catch (e) { /* bỏ qua */ }
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
+        const cached = readCache();
+        if (cached) {
+            renderPricing(cached.pricing);
+            applySettings(cached.settings);
+            return;
+        }
         const [pricing, settings] = await Promise.all([getFirestorePricing(), getFirestoreSettings()]);
         renderPricing(pricing);
         applySettings(settings);
+        // null = chưa có dữ liệu (vẫn lưu tạm để khỏi hỏi lại), undefined = lỗi mạng (không lưu)
+        if (pricing !== undefined && settings !== undefined) writeCache(pricing ?? null, settings ?? null);
     });
 })();

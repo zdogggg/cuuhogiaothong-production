@@ -19,6 +19,30 @@ if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
 // Lấy mã bookingId từ URL
 const urlParams = new URLSearchParams(window.location.search);
 const bookingId = urlParams.get('id');
+const BOOKING_ID_RE = /^CH[A-Z0-9]{8}$/; // khớp rule Firestore
+
+// Khoảng cách giữa 2 toạ độ (mét)
+function distanceM(a, b) {
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(b[0] - a[0]);
+    const dLng = toRad(b[1] - a[1]);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng / 2) ** 2;
+    return 2 * 6371000 * Math.asin(Math.sqrt(h));
+}
+
+// Ghi vị trí lên Firestore; lỗi quyền (link sai, rules chặn) thì báo cho tài xế thay vì im lặng
+let writeErrorShown = false;
+function saveTracking(data) {
+    if (!db) return;
+    db.collection('trackings').doc(bookingId).set(data, { merge: true }).catch(err => {
+        console.error('Lỗi lưu vị trí:', err);
+        statusText.innerText = 'KHÔNG GỬI ĐƯỢC VỊ TRÍ cho khách. Gọi điện báo khách.';
+        if (!writeErrorShown) {
+            writeErrorShown = true;
+            Swal.fire('Không gửi được vị trí', 'Khách sẽ không thấy xe trên bản đồ. Hãy gọi điện báo khách và báo quản trị.', 'error');
+        }
+    });
+}
 
 const bookingDisplay = document.getElementById('bookingDisplay');
 const btnStart = document.getElementById('btnStart');
@@ -44,6 +68,10 @@ const driverIcon = L.divIcon({
 
 let watchId = null;
 let lastSentAt = 0;
+let lastSentPos = null;
+let lastPos = null; // vị trí GPS mới nhất
+let lastRoutedAt = 0;
+let lastRoutedPos = null;
 let isFinished = false;
 let hiddenAt = null;
 let driverMarker = null;
@@ -76,8 +104,8 @@ if (customerLat && customerLng) {
     navBtn.style.display = 'flex';
 }
 
-if (!bookingId) {
-    bookingDisplay.innerText = "LỖI: KHÔNG CÓ MÃ CUỐC";
+if (!bookingId || !BOOKING_ID_RE.test(bookingId)) {
+    bookingDisplay.innerText = "LỖI: MÃ CUỐC KHÔNG HỢP LỆ";
     btnStart.disabled = true;
     Swal.fire('Lỗi', 'Đường link không hợp lệ. Vui lòng mở lại từ Telegram.', 'error');
 } else {
@@ -119,12 +147,10 @@ document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
         if (isTracking) {
             hiddenAt = Date.now();
-            if (db) {
-                db.collection('trackings').doc(bookingId).set({
-                    status: 'paused',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            }
+            saveTracking({
+                status: 'paused',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
         }
         return;
     }
@@ -177,6 +203,7 @@ btnStart.addEventListener('click', async () => {
             
             // Cập nhật bản đồ
             const newPos = [lat, lng];
+            lastPos = newPos;
             if (!driverMarker) {
                 driverMarker = L.marker(newPos, {icon: driverIcon}).addTo(map);
             } else {
@@ -184,7 +211,12 @@ btnStart.addEventListener('click', async () => {
             }
             
             // Vẽ đường đi nếu có tọa độ khách
-            if (customerLat && customerLng) {
+            // Tính lại đường đi khi xe đã đi thêm 150 m hoặc sau 60 giây: máy chủ tính đường (OSRM)
+            // miễn phí chỉ cho ~1 yêu cầu/giây, gọi theo từng lần GPS cập nhật dễ bị chặn
+            const needReroute = !lastRoutedPos || distanceM(lastRoutedPos, newPos) > 150 || Date.now() - lastRoutedAt > 60000;
+            if (customerLat && customerLng && needReroute) {
+                lastRoutedPos = newPos;
+                lastRoutedAt = Date.now();
                 if (!routingControl) {
                     routingControl = L.Routing.control({
                         waypoints: [
@@ -219,15 +251,19 @@ btnStart.addEventListener('click', async () => {
                 isFirstLocation = false;
             }
 
-            // Cập nhật Firebase (tối đa 3 giây/lần để đỡ tốn băng thông)
-            if (db && Date.now() - lastSentAt >= 3000) {
+            // Gửi vị trí: tối đa 3 giây/lần khi xe chạy (đã đi ≥ 10 m); xe đứng yên thì 20 giây/lần
+            // để khách vẫn thấy "đang cập nhật" mà không tốn lượt ghi Firestore (gói miễn phí 20.000/ngày)
+            const sinceLast = Date.now() - lastSentAt;
+            const moved = !lastSentPos || distanceM(lastSentPos, newPos) >= 10;
+            if (db && (sinceLast >= 20000 || (sinceLast >= 3000 && moved))) {
                 lastSentAt = Date.now();
-                db.collection('trackings').doc(bookingId).set({
+                lastSentPos = newPos;
+                saveTracking({
                     lat: lat,
                     lng: lng,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'moving'
-                }, { merge: true });
+                });
             }
         },
         (error) => {
@@ -246,6 +282,21 @@ btnStart.addEventListener('click', async () => {
         }
     );
 });
+
+// Nhiều điện thoại không báo GPS khi xe đứng yên (chờ đèn đỏ, kẹt xe). Vẫn gửi lại vị trí cũ
+// mỗi 20 giây để trang khách không báo nhầm "mất sóng" sau 1 phút.
+setInterval(() => {
+    if (watchId === null || isFinished || !lastPos || document.visibilityState !== 'visible') return;
+    if (Date.now() - lastSentAt < 20000) return;
+    lastSentAt = Date.now();
+    lastSentPos = lastPos;
+    saveTracking({
+        lat: lastPos[0],
+        lng: lastPos[1],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'moving'
+    });
+}, 5000);
 
 btnStop.addEventListener('click', () => {
     Swal.fire({
@@ -269,14 +320,12 @@ btnStop.addEventListener('click', () => {
             isFinished = true;
 
             // Cập nhật trạng thái và xoá toạ độ xe — xong cuốc thì không cần lưu vị trí nữa
-            if (db) {
-                db.collection('trackings').doc(bookingId).set({
-                    status: 'arrived',
-                    lat: null,
-                    lng: null,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            }
+            saveTracking({
+                status: 'arrived',
+                lat: null,
+                lng: null,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
             
             statusText.innerText = "Đã hoàn thành cuốc xe.";
             btnStop.disabled = true;

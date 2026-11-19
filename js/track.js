@@ -62,6 +62,8 @@ const towTruckIcon = L.divIcon({
 
 let driverMarker = null;
 let routingControl = null;
+let lastRoutedAt = 0;
+let lastRoutedPos = null;
 let isFirstLocation = true;
 
 // Lấy mã cuốc từ URL (?id=CH...); tọa độ khách được lưu trên máy khách lúc gửi form, không nằm trên URL
@@ -127,16 +129,30 @@ function updateStaleNotice() {
     }
 }
 
-if (!bookingId) {
-    alert("Không tìm thấy mã chuyến xe!");
+function showTrackError(title) {
+    $('loader').style.display = 'none';
+    $('statusTitle').innerText = title;
+    $('statusDesc').innerHTML = 'Đường link có thể không đúng hoặc đã hết hạn. Vui lòng gọi <a href="tel:0979032589" style="color: #d32f2f; font-weight: 700;">0979 032 589</a> để được hỗ trợ.';
+}
+
+if (!bookingId || !/^CH[A-Z0-9]{8}$/.test(bookingId)) {
+    showTrackError('Không tìm thấy mã cuốc xe');
 } else if (db) {
     setInterval(updateStaleNotice, 10000);
+
+    // Sau 3 phút vẫn chưa có tài xế bấm nhận cuốc thì mời khách gọi thẳng hotline
+    let driverSeen = false;
+    setTimeout(() => {
+        if (driverSeen) return;
+        $('statusDesc').innerHTML = 'Chúng tôi đang sắp xếp xe. Cần nhanh hơn, vui lòng gọi <a href="tel:0979032589" style="color: #d32f2f; font-weight: 700;">0979 032 589</a>.';
+    }, 3 * 60 * 1000);
 
     // Lắng nghe dữ liệu vị trí tài xế từ Cloud Firestore
     db.collection('trackings').doc(bookingId).onSnapshot((doc) => {
         if (!doc.exists) return;
         const data = doc.data();
         if (!data) return;
+        driverSeen = true;
 
         latestStatus = data.status;
 
@@ -184,8 +200,14 @@ if (!bookingId) {
             driverMarker.setLatLng(newPos);
         }
         
-        // Vẽ đường đi
-        if (customerLat && customerLng) {
+        // Vẽ đường đi: chỉ tính lại khi xe đi thêm 150 m hoặc sau 60 giây (máy chủ OSRM miễn phí
+        // giới hạn ~1 yêu cầu/giây; gọi theo mỗi lần cập nhật dễ bị chặn và tốn pin máy khách)
+        const needReroute = !lastRoutedPos || haversineKm(lastRoutedPos, newPos) > 0.15 || Date.now() - lastRoutedAt > 60000;
+        if (customerLat && customerLng && !needReroute) {
+            if (straightLine) straightLine.setLatLngs([newPos, [Number(customerLat), Number(customerLng)]]);
+        } else if (customerLat && customerLng) {
+            lastRoutedPos = newPos;
+            lastRoutedAt = Date.now();
             if (!routingControl) {
                 routingControl = L.Routing.control({
                     waypoints: [
@@ -239,9 +261,7 @@ if (!bookingId) {
     }, (error) => {
         // Mã cuốc sai định dạng hoặc mất quyền đọc: báo rõ thay vì để khách chờ mãi
         console.error('Lỗi theo dõi cuốc:', error);
-        $('loader').style.display = 'none';
-        $('statusTitle').innerText = 'Không theo dõi được cuốc này';
-        $('statusDesc').innerHTML = 'Đường link có thể không đúng hoặc đã hết hạn. Vui lòng gọi <a href="tel:0979032589" style="color: #d32f2f; font-weight: 700;">0979 032 589</a> để được hỗ trợ.';
+        showTrackError('Không theo dõi được cuốc này');
     });
 } else {
     console.log("Firebase chưa được cấu hình. Hệ thống giả lập (Chờ kết nối).");

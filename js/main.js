@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Header shadow on scroll
     const header = document.querySelector('.header');
+    // passive + chỉ đổi style khi trạng thái thay đổi: cuộn mượt hơn trên điện thoại yếu
+    let scrolled = null;
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 10) {
-            header.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-        } else {
-            header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.05)';
-        }
-    });
+        const now = window.scrollY > 10;
+        if (now === scrolled) return;
+        scrolled = now;
+        header.style.boxShadow = now ? '0 4px 15px rgba(0,0,0,0.1)' : '0 2px 10px rgba(0,0,0,0.05)';
+    }, { passive: true });
 
     // Mobile hamburger menu toggle
     const menuToggle = document.getElementById('menuToggle');
@@ -64,19 +65,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // Simple Testimonial Slider logic (optional, for the buttons)
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-    const grid = document.querySelector('.testi-grid');
-    
-    if (prevBtn && nextBtn && grid) {
-        // Just a dummy click effect for now as CSS grid handles the layout
-        prevBtn.addEventListener('click', () => {
-            grid.scrollBy({ left: -300, behavior: 'smooth' });
-        });
-        nextBtn.addEventListener('click', () => {
-            grid.scrollBy({ left: 300, behavior: 'smooth' });
-        });
-    }
 });

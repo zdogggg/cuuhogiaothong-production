@@ -170,6 +170,12 @@ async function uploadFile(inputId, urlInputId, previewId, maxWidth = 1600) {
     }
 }
 
+// Trang chủ lưu tạm bảng giá/logo 10 phút trên máy (js/site-data.js). Xoá bản lưu tạm trên máy admin
+// để mở trang chủ thấy ngay thay đổi; máy khách khác sẽ thấy sau tối đa 10 phút.
+function clearSiteCache() {
+    try { localStorage.removeItem('siteData_v1'); } catch (e) { /* bỏ qua */ }
+}
+
 // --- SETTINGS CRUD ---
 function loadSettingsData() {
     if (unsubscribeSettings) unsubscribeSettings();
@@ -204,6 +210,7 @@ function saveSettings() {
         return Swal.fire('Lỗi', 'Link ảnh phải bắt đầu bằng https://', 'error');
     }
     db.collection('settings').doc('general').set(data, { merge: true }).then(() => {
+        clearSiteCache();
         Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã lưu cấu hình', showConfirmButton: false, timer: 1500 });
     }).catch(err => {
         console.error(err);
@@ -329,6 +336,7 @@ function openPricingModal(id = null) {
         if (result.isConfirmed) {
             const refId = isEdit ? id : 'svc_' + Date.now();
             db.collection('pricing').doc(refId).set(result.value).then(() => {
+                clearSiteCache();
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Lưu thành công!', showConfirmButton: false, timer: 1500 });
             }).catch(err => {
                 console.error(err);
@@ -351,6 +359,7 @@ function deletePricing(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             db.collection('pricing').doc(id).delete().then(() => {
+                clearSiteCache();
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã xóa!', showConfirmButton: false, timer: 1500 });
             }).catch(err => {
                 console.error(err);
@@ -362,11 +371,16 @@ function deletePricing(id) {
 
 function formatPriceDisplay(val) {
     if (!val) return '-';
-    // Gom cả số đã có dấu chấm (300.000) rồi định dạng lại, tránh biến "000" thành "0"
-    let str = val.toString().replace(/\d[\d.]*\d|\d/g, function(m) {
-        return parseInt(m.replace(/\./g, ''), 10).toLocaleString('vi-VN');
+    // Giống formatPrice trong js/site-data.js (trang chủ) — sửa thì sửa cả hai.
+    // Chỉ định dạng lại số nguyên hoặc số chia nghìn đúng kiểu; "1.5tr", "1,5 triệu" giữ nguyên
+    let str = String(val).replace(/\d+(?:[.,]\d+)*/g, m => {
+        if (!/^\d+$/.test(m) && !/^\d{1,3}(?:\.\d{3})+$/.test(m)) return m;
+        const n = parseInt(m.replace(/\./g, ''), 10);
+        return n >= 1000 ? n.toLocaleString('vi-VN') : m;
     });
-    // Chưa ghi đơn vị tiền (VNĐ, đồng, 500k đ...) thì thêm "VNĐ" sau con số cuối: "15.000/km" → "15.000 VNĐ/km"
-    if (/\d/.test(str) && !/vn[dđ]|đồng|\d\s?(?:đ|k)(?!\p{L})/iu.test(str)) str = str.replace(/(\d[\d.]*)(?!.*\d)/, '$1 VNĐ');
+    // Chưa ghi đơn vị (VNĐ, đồng, triệu, 500k, 1tr...) thì thêm "VNĐ" sau con số cuối: "15.000/km" → "15.000 VNĐ/km"
+    if (/\d/.test(str) && !/vn[dđ]|đồng|triệu|nghìn|ngàn|\d\s?(?:đ|k|tr)(?!\p{L})/iu.test(str)) {
+        str = str.replace(/(\d+(?:[.,]\d+)*)(?!.*\d)/, '$1 VNĐ');
+    }
     return str;
 }
